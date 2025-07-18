@@ -7,16 +7,17 @@ import CommunityScreen from '../screens/Community/CommunityScreen';
 import LoginScreen from '../screens/Login/LoginScreen';
 import TabNavigator from './TabNavigator';
 import MyPageScreen from '../screens/MyPage/MyPageScreen';
+import SignupScreen from '../screens/Signup/SignupScreen';
 
 const Stack = createNativeStackNavigator();
 
 const StackNavigator = () => {
   return (
     // <Stack.Navigator initialRouteName="Home">
-    <Stack.Navigator initialRouteName="Main" screenOptions={{ headerShown: false }}>
-      
-      <Stack.Screen name="Main" component={TabNavigator}/>
+    <Stack.Navigator initialRouteName="Signup" screenOptions={{ headerShown: false }}>
       <Stack.Screen name="Login" component={LoginScreen}/>
+      <Stack.Screen name="Signup" component={SignupScreen}/>      
+      <Stack.Screen name="Main" component={TabNavigator}/>
       {/* <Stack.Screen name="Home" component={HomeScreen}/>
       <Stack.Screen name="Mission" component={MissionScreen}/>
       <Stack.Screen name="Community" component={CommunityScreen}/>
