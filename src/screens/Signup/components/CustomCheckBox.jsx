@@ -1,7 +1,7 @@
 // components/CustomCheckbox.js
 import React from 'react';
 import { TouchableOpacity, View, StyleSheet } from 'react-native';
-import { Ionicons } from '@expo/vector-icons'; // expo 사용하는 경우
+import { Ionicons } from '@expo/vector-icons';
 
 const CustomCheckbox=({ checked, onToggle })=>{
   return (

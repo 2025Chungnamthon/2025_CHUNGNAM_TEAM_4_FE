@@ -5,7 +5,7 @@ import InputWithIcon from './components/InputWithIcon';
 import { moderateScale } from 'react-native-size-matters';
 import EmailInputWithCheckButton from './components/EmailInputWithCheckButton';
 
-const SignupScreen = () => {
+const SignupScreen = ({navigation}) => {
   const [email, setEmail] = useState('');
   const [isEmailChecked, setIsEmailChecked] = useState(false);
   const [password, setPassword] = useState('');
@@ -46,6 +46,7 @@ const SignupScreen = () => {
     }
     // 여기에 회원가입 API 로직 추가
     console.log('회원가입 요청:', { email, password, nickname });
+    navigation.navigate("Login")
   };
 
   return (
