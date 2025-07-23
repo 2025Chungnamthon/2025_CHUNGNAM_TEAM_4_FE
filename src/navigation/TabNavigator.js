@@ -2,9 +2,9 @@ import { Image, StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import HomeScreen from '../screens/Home/HomeScreen';
-import MissionScreen from '../screens/Mission/MissionScreen';
 import CommunityScreen from '../screens/Community/CommunityScreen';
 import MyPageScreen from '../screens/MyPage/MyPageScreen';
+import MissionStack from './MissionStack';
 
 const Tab = createBottomTabNavigator();
 
@@ -63,7 +63,7 @@ const TabNavigator = () => {
     >
 
         <Tab.Screen name="Home" component={HomeScreen}/>
-        <Tab.Screen name="Mission" component={MissionScreen}/>
+        <Tab.Screen name="Mission" component={MissionStack}/>
         <Tab.Screen name="Community" component={CommunityScreen}/>
         <Tab.Screen name="MyPage" component={MyPageScreen}/>
     </Tab.Navigator>

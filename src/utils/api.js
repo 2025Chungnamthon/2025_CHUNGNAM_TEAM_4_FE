@@ -2,7 +2,7 @@ import axios from "axios";
 
 
 const api = axios.create({
-  baseURL: '', // 백엔드 API 주소
+  baseURL: 'https://chungnam4team-g9e7dze4hhdnhccg.koreacentral-01.azurewebsites.net', // 백엔드 API 주소
   timeout: 5000,
   headers: {
     'Content-Type': 'application/json',

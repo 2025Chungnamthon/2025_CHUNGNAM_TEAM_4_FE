@@ -4,8 +4,11 @@ import CustomCheckbox from './components/CustomCheckBox';
 import InputWithIcon from './components/InputWithIcon';
 import { moderateScale } from 'react-native-size-matters';
 import EmailInputWithCheckButton from './components/EmailInputWithCheckButton';
+import { useDispatch } from 'react-redux';
+import { checkEmailDup, registerUser } from '../../redux/slices/userSlice';
 
 const SignupScreen = ({navigation}) => {
+  const dispatch = useDispatch();
   const [email, setEmail] = useState('');
   const [isEmailChecked, setIsEmailChecked] = useState(false);
   const [password, setPassword] = useState('');
@@ -24,29 +27,31 @@ const SignupScreen = ({navigation}) => {
 
   const checkEmailDuplicate = () => {
     console.log(email);
-    try {
-        // 예시 API 요청 (axios 또는 fetch 사용 가능)
-        // const response = await axios.get(`https://your-api.com/api/check-email?email=${email}`);
-        if (1) {
-            Alert.alert("중복 확인",'중복 확인 성공');
-            setIsEmailChecked(true);        
-        } else {
-            Alert.alert("중복 확인",'이미 존재하는 계정이 있습니다');
-        }
-    } catch (error) {
-        console.error(error);
-        Alert.alert('API 오류');
-    }
+    dispatch(checkEmailDup({email}));
+    // try {
+    //     // 예시 API 요청 (axios 또는 fetch 사용 가능)
+    //     // const response = await axios.get(`https://your-api.com/api/check-email?email=${email}`);
+    //     if (1) {
+    //         Alert.alert("중복 확인",'중복 확인 성공');
+    //         setIsEmailChecked(true);        
+    //     } else {
+    //         Alert.alert("중복 확인",'이미 존재하는 계정이 있습니다');
+    //     }
+    // } catch (error) {
+    //     console.error(error);
+    //     Alert.alert('API 오류');
+    // }
   }
 
   const handleSignUp = () => {
     if (!agreeTerms || !agreePrivacy) {
-      alert('필수 약관에 모두 동의해야 합니다.');
+      Alert.alert("오류",'필수 약관에 모두 동의해야 합니다.');
       return;
     }
     // 여기에 회원가입 API 로직 추가
-    console.log('회원가입 요청:', { email, password, nickname });
-    navigation.navigate("Login")
+    dispatch(registerUser({email, password, nickname}))
+    // console.log('회원가입 요청:', { email, password, nickname });
+    // navigation.navigate("Login")
   };
 
   return (

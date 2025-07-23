@@ -1,12 +1,15 @@
 import { View, Text, TextInput, TouchableOpacity, Image, StyleSheet, Linking, Dimensions, Animated } from 'react-native';
 import React, { useEffect, useRef, useState } from 'react'
 import { moderateScale } from 'react-native-size-matters';
+import { useDispatch } from 'react-redux';
+import { loginUser } from '../../redux/slices/userSlice';
+import { getAccessToken, getRefreshToken } from '../../utils/tokenStorage';
 
 const {width, height} = Dimensions.get('window');
 
-const FloatingLabelInput = ({ label, secureTextEntry = false }) => {
+const FloatingLabelInput = ({ value, label, onChangeText ,secureTextEntry = false }) => {
   const [isFocused, setIsFocused] = useState(false);
-  const [value, setValue] = useState('');
+  // const [value, setValue] = useState('');
   const animatedIsFocused = useRef(new Animated.Value(value ? 1 : 0)).current;
 
   useEffect(() => {
@@ -43,7 +46,7 @@ const FloatingLabelInput = ({ label, secureTextEntry = false }) => {
       </Animated.Text>
       <TextInput
         value={value}
-        onChangeText={setValue}
+        onChangeText={onChangeText}
         style={[
           styles.input,
           label==="이메일"?styles.IDInput:styles.passInput,
@@ -60,11 +63,17 @@ const FloatingLabelInput = ({ label, secureTextEntry = false }) => {
 
 
 const LoginScreen = ({navigation}) => {
+  const dispatch = useDispatch()    
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');  
   const [isIdFocused, setIsIdFocused] = useState(false);
   const [isPwFocused, setIsPwFocused] = useState(false);
 
   const handleLogin = () => {
-    navigation.replace('Main');
+    console.log("login")
+    dispatch(loginUser({ email, password }));
+    console.log("after loginnn")
+    // navigation.replace('Main');
   }
 
   const handleSignupButton = () => {
@@ -82,8 +91,8 @@ const LoginScreen = ({navigation}) => {
 
         {/* 입력 필드 */}
         <View style={styles.inputContainer}>
-          <FloatingLabelInput label="이메일" />
-          <FloatingLabelInput label="비밀번호" secureTextEntry />
+          <FloatingLabelInput value={email} label="이메일" onChangeText={setEmail} />
+          <FloatingLabelInput value={password} label="비밀번호" onChangeText={setPassword} secureTextEntry />
         </View>
 
         {/* 버튼 */}
@@ -94,6 +103,14 @@ const LoginScreen = ({navigation}) => {
         <TouchableOpacity onPress={handleSignupButton} style={styles.signupButton}>
           <Text style={styles.signupButtonText}>회원가입</Text>
         </TouchableOpacity>
+
+        {/* <TouchableOpacity onPress={async()=>{console.log(await getAccessToken())}} style={styles.signupButton}>
+          <Text style={styles.signupButtonText}>getAccessToken</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={async()=>{console.log(await getRefreshToken())}} style={styles.signupButton}>
+          <Text style={styles.signupButtonText}>getRefreshToken</Text>
+        </TouchableOpacity>         */}
       </View>
 
       <View style={styles.bottomContainer}>
