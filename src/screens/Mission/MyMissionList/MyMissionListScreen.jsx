@@ -1,22 +1,94 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Image } from 'react-native';
-import MissionCard from './components/MissionCard';
-// import MissionCard from '../../components/MissionCard';
+// import MissionCard from './components/MissionCard';
+import { moderateScale } from 'react-native-size-matters';
+import { Dimensions } from 'react-native';
+import COLORS from '../../../constants/colors';
+import ExpandableMissionCard from './components/ExpandableMissionCard';
+import CertificationModal from './components/CertificationModal';
 // import { categoryColors } from '../../constants/colors';
 
+const {width, height} = Dimensions.get('window');
+
+const missionData = [
+  { 
+    id: '1',
+    title: '제로웨이스트 매장 방문',
+    rewardPoints: 500,
+    category: "일상 속 습관",    
+    // category: "친환경 이동",
+    // category: "친환경 소비",
+    // category: "재활용/자원순환",
+    // category: "에너지 절약",
+    // category: "저탄소 식생활",
+    // category: "환경 교육/확산",
+    // category: "지역사회/공동체 활동",
+    type: 'WEEKLY',
+    description: '제로웨이스트 매장 방문 후 사진 인증하기, 본인을 인증할 수 있는 사진 2장 첨부 필수',
+  },
+  {
+    id: '2',
+    title: '친환경 캠페인 알리기',
+    rewardPoints: 40,
+    icon: 'cube-outline',
+    type: 'DAILY',
+    description: '친환경 캠페인 소식이나 정보를 친구나 주변인에게 공유한 후 알린 내용을 인증할 수 있는 사진 첨부',
+    category: "친환경 소비",
+  },
+  {
+    id: '3',
+    title: '플로깅 실천하기',
+    rewardPoints: 60,
+    icon: 'cube-outline',
+    type: 'DAILY',
+    description: '천안 지역에서 플로깅을 실천 후 인증할 수 있는 사진 2장 첨부하기 (장소 인증 필수)',
+    category: "재활용/자원순환",
+  },
+  {
+    id: '4',
+    title: '장바구니 지참하기',
+    rewardPoints: 30,
+    icon: 'cube-outline',
+    type: 'DAILY',
+    description: '장바구니를 지참하여 마트나 시장에서 장을보고 인증하기 장바구니에 물건이 담겨진 사진 첨부',
+    category: "에너지 절약",
+  },
+];
+
+
+
 const MyMissionListScreen = () => {
-  const missionData = [
-    { type: 'weekly', title: '제로웨이스트 매장 방문', point: 500},
-    { type: 'daily', title: '장바구니 지참하기', point: 30},
-    { type: 'daily', title: '플로깅 실천하기', point: 60},
-    { type: 'daily', title: '친환경 캠페인 알리기', point: 40},
-  ];
+  const [expandedIndex, setExpandedIndex] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedMission, setSelectedMission] = useState(null); // 선택된 미션 정보  
+  
+
+  const toggleExpand = (index) => {
+    setExpandedIndex(prev => (prev === index ? null : index));
+  };
+
+  const openCertificationModal = (mission) => {
+    setSelectedMission(mission);
+    setModalVisible(true);
+  };
+
+  const closeCertificationModal = () => {
+    setModalVisible(false);
+  };  
 
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
-        {/* <Image source={require('../../assets/logo.png')} style={styles.logo} />
-        <Image source={require('../../assets/check.png')} style={styles.checkIcon} /> */}
+        <Image 
+          source={require('../../../assets/common/logo.png')} 
+          style={styles.logo} 
+          resizeMode="contain"        
+        />
+        <Image 
+          source={require('../../../assets/Mission/MyMissionList/checkBox.png')}
+          resizeMode="contain"         
+          style={styles.checkIcon} 
+        />
       </View>
 
       <View style={styles.userInfo}>
@@ -25,39 +97,47 @@ const MyMissionListScreen = () => {
 
       <View style={styles.cardList}>
         {missionData.map((mission, index) => (
-          <MissionCard
-            key={index}
-            type={mission.type}
-            icon={mission.icon}
-            title={mission.title}
-            point={mission.point}
-            onPress={() => console.log('확인하기 눌림')}
-          />
+        <ExpandableMissionCard
+          key={index}
+          mission={mission}
+          isExpanded={expandedIndex === index}
+          onToggle={() => toggleExpand(index)}
+          openCertificationModal={openCertificationModal}
+        />
         ))}
       </View>
+
+      <CertificationModal
+        visible={modalVisible}
+        mission={selectedMission}
+        onClose={closeCertificationModal}
+      />
+
     </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
+    paddingHorizontal: width*0.06,
+    paddingTop: height* 0.04,
     backgroundColor: '#F6F6F6',
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems:"center",
   },
   logo: {
-    width: 60,
-    height: 30,
+    width: moderateScale(60),
+    // height: 30,
   },
   checkIcon: {
     width: 24,
-    height: 24,
+    // height: 24,
   },
   userInfo: {
-    backgroundColor: '#0DA666',
+    backgroundColor: COLORS.green400,
     padding: 12,
     borderRadius: 8,
     marginVertical: 16,
@@ -69,6 +149,8 @@ const styles = StyleSheet.create({
   },
   cardList: {
     marginTop: 8,
+    // marginBottom: 80,
+    paddingBottom: height*0.08,
   },
 });
 

@@ -34,7 +34,8 @@ export const checkEmailDup = createAsyncThunk(
       {rejectWithValue}
     )=>{
       try{
-        const response = await api.post("/api/users/check-email",{email})
+        console.log("email: ", email)
+        const response = await api.get(`/api/users/check-email?email=${email}`)
         console.log(response.data.message)
 
         return response.data;

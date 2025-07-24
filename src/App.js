@@ -5,6 +5,7 @@ import StackNavigator from "./navigation/StackNavigator";
 import {SafeAreaProvider} from "react-native-safe-area-context";
 import {Provider} from "react-redux";
 import store from "./redux/store";
+import { ActionSheetProvider } from "@expo/react-native-action-sheet";
 // import * as SystemUI from 'expo-system-ui'; // 추가
 
 export default function App() {
@@ -15,9 +16,11 @@ export default function App() {
   return (
     <Provider store={store}>
       <SafeAreaProvider>
-        <NavigationContainer>
-          <StackNavigator />
-        </NavigationContainer>
+        <ActionSheetProvider>        
+          <NavigationContainer>
+            <StackNavigator />
+          </NavigationContainer>
+        </ActionSheetProvider>    
       </SafeAreaProvider>
     </Provider>
   );

@@ -4,8 +4,8 @@ import { useNavigation } from '@react-navigation/native';
 const MissionRouter = () => {
   const navigation = useNavigation();
 
-  const [hasDailyMission, setHasDailyMission] = useState(false);
-  const [hasWeeklyMission, setHasWeeklyMission] = useState(false);
+  const [hasDailyMission, setHasDailyMission] = useState(true);
+  const [hasWeeklyMission, setHasWeeklyMission] = useState(true);
 
   // 예: Redux 상태로부터 유저 미션 존재 여부 확인
 //   const hasDailyMission = useSelector(state => state.missions.hasDaily);
