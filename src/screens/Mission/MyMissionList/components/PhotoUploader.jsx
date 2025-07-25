@@ -39,7 +39,7 @@ const PhotoUploader = ({ images, setImages, maxCount = 3 }) => {
     }
 
     const result = await ImagePicker.launchCameraAsync({
-      allowsEditing: false,
+      allowsEditing: true,
       quality: 0.7,
     });
 
@@ -56,7 +56,7 @@ const PhotoUploader = ({ images, setImages, maxCount = 3 }) => {
     }
 
     const result = await ImagePicker.launchImageLibraryAsync({
-      allowsEditing: true,
+      allowsEditing: false,
       quality: 0.7,
     });
 

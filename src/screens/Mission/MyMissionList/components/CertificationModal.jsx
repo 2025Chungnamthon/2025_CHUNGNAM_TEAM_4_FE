@@ -15,8 +15,8 @@ import { moderateScale } from 'react-native-size-matters';
 import COLORS from '../../../../constants/colors';
 import { getSmallCategoryIcon } from '../../../../utils/categoryIconMapper';
 // import ImagePickerBox from './ImagePickerBox';
-import * as ImagePicker from 'expo-image-picker';
-import ImagePickerBoxMultiple from './ImagePickerBoxMultiple';
+// import * as ImagePicker from 'expo-image-picker';
+// import ImagePickerBoxMultiple from './ImagePickerBoxMultiple';
 import PhotoUploader from './PhotoUploader';
 
 const {width, height} = Dimensions.get('window');

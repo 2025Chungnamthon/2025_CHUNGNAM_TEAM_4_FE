@@ -1,14 +1,14 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 
-const MyPageScreen = () => {
+const AIMissionManageScreen = () => {
   return (
     <View>
-      <Text>MyPageScreen</Text>
+      <Text>AIMissionManageScreen</Text>
     </View>
   )
 }
 
-export default MyPageScreen
+export default AIMissionManageScreen
 
 const styles = StyleSheet.create({})
