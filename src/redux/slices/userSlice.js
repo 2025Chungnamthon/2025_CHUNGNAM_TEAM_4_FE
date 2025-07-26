@@ -22,7 +22,7 @@ export const loginUser = createAsyncThunk(
       return response.data;
     } catch (error) {
         console.log("errorrr",error)
-      return rejectWithValue(error.message);
+      return rejectWithValue(error.response.data.message);
     }
   }
 )
@@ -83,7 +83,8 @@ const userSlice = createSlice({
         })
         .addCase(loginUser.fulfilled, (state, action) => {
             state.loginLoading = false;
-            // state.user = action.payload.user_id;
+            // const { accessToken, refreshToken, ...userInfo } = action.payload;
+            // state.user = userInfo;
         })
         .addCase(loginUser.rejected, (state, action) => {
             state.loginLoading = false;

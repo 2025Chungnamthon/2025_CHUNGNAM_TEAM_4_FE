@@ -6,7 +6,7 @@ const REFRESH_TOKEN_KEY = 'refresh_token';
 export const saveAccessToken = async (value) => {
   try {
     await SecureStore.setItemAsync(ACCESS_TOKEN_KEY, value);
-    console.log(`access token saved successfully`, value);
+    // console.log(`access token saved successfully`, value);
   } catch (error) {
     console.log(`access token saving failed`, error);
   }
@@ -16,7 +16,7 @@ export const saveRefreshToken = async (value) => {
   // async function saveToken(key, value) {
   try {
     await SecureStore.setItemAsync(REFRESH_TOKEN_KEY, value);
-    console.log(`refresh token saved successfully`, value);
+    // console.log(`refresh token saved successfully`, value);
   } catch (error) {
     console.log(`refresh token saving failed`, error);
   }
@@ -25,7 +25,7 @@ export const saveRefreshToken = async (value) => {
 export const getAccessToken = async () => {
   try {
     const accessToken = await SecureStore.getItemAsync(ACCESS_TOKEN_KEY);
-    console.log('accessToken',accessToken);
+    // console.log('accessToken',accessToken);
     return accessToken;
   } catch (error) {
     console.error('Failed to get access token:', error);
@@ -36,7 +36,7 @@ export const getAccessToken = async () => {
 export const getRefreshToken = async () => {
   try {
     const refreshToken = await SecureStore.getItemAsync(REFRESH_TOKEN_KEY);
-    console.log('refreshToken',refreshToken);
+    // console.log('refreshToken',refreshToken);
     return refreshToken;
   } catch (error) {
     console.error('Failed to get refresh token:', error);

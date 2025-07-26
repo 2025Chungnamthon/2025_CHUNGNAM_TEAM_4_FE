@@ -1,66 +1,13 @@
 import { View, Text, TextInput, TouchableOpacity, Image, StyleSheet, Linking, Dimensions, Animated } from 'react-native';
 import React, { useEffect, useRef, useState } from 'react'
 import { moderateScale } from 'react-native-size-matters';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { loginUser } from '../../redux/slices/userSlice';
 import { getAccessToken, getRefreshToken } from '../../utils/tokenStorage';
+import LoadingSpinner from '../../components/LoadingSpinner';
+import FloatingLabelInput from './components/FloatingLabelInput';
 
 const {width, height} = Dimensions.get('window');
-
-const FloatingLabelInput = ({ value, label, onChangeText ,secureTextEntry = false }) => {
-  const [isFocused, setIsFocused] = useState(false);
-  // const [value, setValue] = useState('');
-  const animatedIsFocused = useRef(new Animated.Value(value ? 1 : 0)).current;
-
-  useEffect(() => {
-    Animated.timing(animatedIsFocused, {
-      toValue: isFocused || value ? 1 : 0,
-      duration: 200,
-      useNativeDriver: false,
-    }).start();
-  }, [isFocused, value]);
-
-  const labelStyle = {
-    position: 'absolute',
-    left: 8,
-    top: animatedIsFocused.interpolate({
-      inputRange: [0, 1],
-      outputRange: [14, 2],
-    }),
-    fontSize: animatedIsFocused.interpolate({
-      inputRange: [0, 1],
-      outputRange: [14, 9],
-    }),
-    color: animatedIsFocused.interpolate({
-      inputRange: [0, 1],
-      outputRange: ['#aaa', '#aaa'],
-    }),
-    backgroundColor: '#fff',
-    paddingHorizontal: 4,
-  };
-
-  return (
-    <View>
-      <Animated.Text style={labelStyle}>
-        {label}
-      </Animated.Text>
-      <TextInput
-        value={value}
-        onChangeText={onChangeText}
-        style={[
-          styles.input,
-          label==="이메일"?styles.IDInput:styles.passInput,
-          (isFocused || value) && styles.inputFocused,
-        ]}
-        onFocus={() => setIsFocused(true)}
-        onBlur={() => setIsFocused(false)}
-        secureTextEntry={secureTextEntry}
-      />
-    </View>
-  );
-};
-
-
 
 const LoginScreen = ({navigation}) => {
   const dispatch = useDispatch()    
@@ -68,12 +15,16 @@ const LoginScreen = ({navigation}) => {
   const [password, setPassword] = useState('');  
   const [isIdFocused, setIsIdFocused] = useState(false);
   const [isPwFocused, setIsPwFocused] = useState(false);
+  const {loginLoading} = useSelector((state)=>state.user)
 
-  const handleLogin = () => {
-    console.log("login")
-    dispatch(loginUser({ email, password }));
-    console.log("after loginnn")
-    // navigation.replace('Main');
+  const handleLogin = async() => {
+    try {
+      const res = await dispatch(loginUser({ email, password })).unwrap();
+      console.log("로그인 성공", res);
+      navigation.replace("Main");
+    } catch (err) {
+      Alert.alert("로그인 실패", err);
+    }
   }
 
   const handleSignupButton = () => {
@@ -97,7 +48,7 @@ const LoginScreen = ({navigation}) => {
 
         {/* 버튼 */}
         <TouchableOpacity onPress={handleLogin} style={styles.loginButton}>
-          <Text style={styles.loginButtonText}>로그인</Text>
+          {loginLoading?<LoadingSpinner/>:<Text style={styles.loginButtonText}>로그인</Text>}
         </TouchableOpacity>
 
         <TouchableOpacity onPress={handleSignupButton} style={styles.signupButton}>
@@ -178,31 +129,31 @@ const styles = StyleSheet.create({
     paddingTop: 15,
     paddingBottom:10,
   },
-  IDInput:{
-    borderWidth: 1,
-    borderColor: '#ccc',
-    height: 48,
-    paddingHorizontal: 12,
-    borderTopLeftRadius: 6,
-    borderTopRightRadius: 6,
-    // borderRadius: 6,
-    // marginBottom: 10,    
-  },
-  passInput:{
-    borderWidth: 1,
-    // borderTopWidth: 0,
-    borderColor: '#ccc',
-    height: 48,
-    paddingHorizontal: 12,
-    borderBottomLeftRadius: 6,
-    borderBottomRightRadius: 6,    
-    // borderRadius: 6,
-    marginBottom: 10,
-  },
-  inputFocused: {
-    borderColor: '#0DA666',
-    borderWidth:1.5,
-  },
+  // IDInput:{
+  //   borderWidth: 1,
+  //   borderColor: '#ccc',
+  //   height: 48,
+  //   paddingHorizontal: 12,
+  //   borderTopLeftRadius: 6,
+  //   borderTopRightRadius: 6,
+  //   // borderRadius: 6,
+  //   // marginBottom: 10,    
+  // },
+  // passInput:{
+  //   borderWidth: 1,
+  //   // borderTopWidth: 0,
+  //   borderColor: '#ccc',
+  //   height: 48,
+  //   paddingHorizontal: 12,
+  //   borderBottomLeftRadius: 6,
+  //   borderBottomRightRadius: 6,    
+  //   // borderRadius: 6,
+  //   marginBottom: 10,
+  // },
+  // inputFocused: {
+  //   borderColor: '#0DA666',
+  //   borderWidth:1.5,
+  // },
   loginButton: {
     backgroundColor: '#22A75D',
     width: '100%',

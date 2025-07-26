@@ -3,6 +3,8 @@ const COLORS = {
   green200: '#189D66',
   green300: '#578B3F',
   green400: '#17704B',   // 가장 어두움
+  approve: '#189D66',
+  decline: '#D91616',
 };
 
 export default COLORS;

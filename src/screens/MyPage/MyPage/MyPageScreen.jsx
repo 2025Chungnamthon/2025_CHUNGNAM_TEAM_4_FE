@@ -10,16 +10,19 @@ const MyPageScreen = () => {
   const navigation = useNavigation();
 
   const menuItems = [
-    { label: '관리자 화면', route: 'AdminMode' },    
-    { label: '내정보 확인', route: 'ProfileDetail' },
-    { label: '포인트 사용 내역', route: 'PointHistory' },
-    { label: '환경설정', route: 'Settings' },
-    { label: '로그아웃', route: 'Logout' },
-
+    { label: '관리자 화면', func: ()=>navigation.navigate('AdminStack')},    
+    { label: '내정보 확인', func: ()=>navigation.navigate('UserInfoScreen')},
+    { label: '포인트 사용 내역', func: ()=>navigation.navigate('PointHistoryScreen')},
+    { label: '환경설정', func: ()=>navigation.navigate('SettingsScreen')},
+    { label: '로그아웃', func: handleLogout, route: 'Logout' },
   ];
 
+  const handleLogout=()=>{
+
+  }
+
   const renderMenuItem = ({ item }) => (
-    <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate(item.route)}>
+    <TouchableOpacity style={styles.menuItem} onPress={item.func}>
       <Text style={styles.menuText}>{item.label}</Text>
     </TouchableOpacity>
   );
@@ -37,7 +40,7 @@ const MyPageScreen = () => {
           <Text style={styles.bio}>소개글을 작성해주세요.</Text>
         </View>
         <TouchableOpacity onPress={() => navigation.navigate('EditProfile')}>
-          <Text style={styles.editProfileText}>프로필수정 ></Text>
+          <Text style={styles.editProfileText}>프로필수정 '&gt;'</Text>
         </TouchableOpacity>
       </View>
 

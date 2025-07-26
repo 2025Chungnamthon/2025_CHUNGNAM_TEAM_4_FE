@@ -10,10 +10,10 @@ const Stack = createNativeStackNavigator();
 
 const AdminStack = () => {
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="MyPageScreen">
-        <Stack.Screen name="AdminMain" component={AdminMainScreen} />        
-        <Stack.Screen name="AIMissionManage" component={AIMissionManageScreen} />
-        <Stack.Screen name="UserMissionReview" component={UserMissionReviewScreen} />
+    <Stack.Navigator screenOptions={{ headerShown: false, tabBarStyle: { display: 'none' }}} initialRouteName="AdminMainScreen">
+        <Stack.Screen name="AdminMainScreen" component={AdminMainScreen} />        
+        <Stack.Screen name="AIMissionManageScreen" component={AIMissionManageScreen} />
+        <Stack.Screen name="UserMissionReviewScreen" component={UserMissionReviewScreen} />
     </Stack.Navigator>
   )
 }

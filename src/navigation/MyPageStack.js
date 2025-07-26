@@ -5,15 +5,13 @@ import MyPageScreen from '../screens/MyPage/MyPage/MyPageScreen';
 import PointHistoryScreen from '../screens/MyPage/PointHistory/PointHistoryScreen';
 import SettingsScreen from '../screens/MyPage/Settings/SettingsScreen';
 import UserInfoScreen from '../screens/MyPage/UserInfo/UserInfoScreen';
-import AdminStack from './AdminStack';
 
 
 const Stack = createNativeStackNavigator();
 
 const MyPageStack = () => {
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="MyPageScreen">
-        <Stack.Screen name="Admin" component={AdminStack} />        
+    <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="MyPageScreen">     
         <Stack.Screen name="MyPageScreen" component={MyPageScreen} />
         <Stack.Screen name="UserInfoScreen" component={UserInfoScreen} />
         <Stack.Screen name="PointHistoryScreen" component={PointHistoryScreen} />
