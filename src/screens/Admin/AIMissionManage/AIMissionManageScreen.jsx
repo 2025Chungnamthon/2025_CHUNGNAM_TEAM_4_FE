@@ -6,6 +6,7 @@ import {
   ScrollView,
   StyleSheet,
   Dimensions,
+  Alert,
 } from "react-native";
 import {Ionicons} from "@expo/vector-icons";
 import MissionCard from "./components/MissionCard";
@@ -19,49 +20,49 @@ import EditMissionModal from "./components/EditMissionModal";
 const {width,height} = Dimensions.get('window');
 
 // 예시 데이터
-const missions = [
-  {
-    id: '1',
-    title: '텀블러 사용하기',
-    description: '제로웨이스트 매장 방문 후 사진 인증하기\n본인을 인증할 수 있는 사진 2장 첨부 필수',
-    type: 'DAILY',
-    category: "일상 속 습관",    
-    rewardPoints: 30,
-  },
-  {
-    id: '2',
-    title: '꽃과 나무에 물 주기',
-    rewardPoints: 30,
-    type: '일일 미션',
-    description: '플라스틱/캔/종이를 분리배출하는 사진 2장 첨부',
-    category: "친환경 이동",
-  },
-  {
-    id: '3',
-    title: '친환경 캠페인 알리기',
-    rewardPoints: 40,
-    type: '일일 미션',
-    description: '용기를 이용한 포장 모습 인증 사진 2장 첨부',
-    category: "친환경 소비",
-  },
-  {
-    id: '4',
-    title: '플로깅 실천하기',
-    rewardPoints: 60,
-    type: '일일 미션',
-    description: '용기를 이용한 포장 모습 인증 사진 2장 첨부',
-    category: "재활용/자원순환",
-  },
-  {
-    id: '5',
-    title: '장바구니 지참하기',
-    rewardPoints: 30,
-    icon: 'cube-outline',
-    type: '일일 미션',
-    description: '용기를 이용한 포장 모습 인증 사진 2장 첨부',
-    category: "에너지 절약",
-  },
-];
+// const missions = [
+//   {
+//     id: '1',
+//     title: '텀블러 사용하기',
+//     description: '제로웨이스트 매장 방문 후 사진 인증하기\n본인을 인증할 수 있는 사진 2장 첨부 필수',
+//     type: 'DAILY',
+//     category: "일상 속 습관",    
+//     rewardPoints: 30,
+//   },
+//   {
+//     id: '2',
+//     title: '꽃과 나무에 물 주기',
+//     rewardPoints: 30,
+//     type: '일일 미션',
+//     description: '플라스틱/캔/종이를 분리배출하는 사진 2장 첨부',
+//     category: "친환경 이동",
+//   },
+//   {
+//     id: '3',
+//     title: '친환경 캠페인 알리기',
+//     rewardPoints: 40,
+//     type: '일일 미션',
+//     description: '용기를 이용한 포장 모습 인증 사진 2장 첨부',
+//     category: "친환경 소비",
+//   },
+//   {
+//     id: '4',
+//     title: '플로깅 실천하기',
+//     rewardPoints: 60,
+//     type: '일일 미션',
+//     description: '용기를 이용한 포장 모습 인증 사진 2장 첨부',
+//     category: "재활용/자원순환",
+//   },
+//   {
+//     id: '5',
+//     title: '장바구니 지참하기',
+//     rewardPoints: 30,
+//     icon: 'cube-outline',
+//     type: '일일 미션',
+//     description: '용기를 이용한 포장 모습 인증 사진 2장 첨부',
+//     category: "에너지 절약",
+//   },
+// ];
 
 const AIMissionManageScreen = () => {
   const dispatch = useDispatch();
@@ -70,18 +71,17 @@ const AIMissionManageScreen = () => {
   const [missionGenre, setMissionGenre] = useState(null);
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [selectedMission, setSelectedMission] = useState(null);
-  const { AIMissionList, error } = useSelector((state) => state.mission)  
+  const { missionList, error } = useSelector((state) => state.mission);
  
   useEffect(()=>{
-      console.log("hi")
-      // dispatch(fetchMissions({status:'ACTIVATE'})); //CREATE,ACTIVATE,DELETE
+      dispatch(fetchMissions({status:'CREATE'})); //CREATE,ACTIVATE,DELETE
   },[])
 
-  useEffect(()=>{
-      if(AIMissionList.length!=0){
-          console.log(AIMissionList);
-      }
-  },[AIMissionList])
+  // useEffect(()=>{
+  //     if(AIMissionList.length!=0){
+  //       console.log(AIMissionList);
+  //     }
+  // },[AIMissionList])
 
   const handleCreate = async () => {
     if (!missionType || !missionGenre) {
@@ -89,10 +89,12 @@ const AIMissionManageScreen = () => {
       return;
     }
     try {
-      const result = await dispatch(createMissionList({ type: missionType, category: missionGenre })).unwrap();
-    //   dispatch(createMissionList({ type: missionType, category: missionGenre }));
+      // const result = await dispatch(createMissionList({ type: missionType, category: missionGenre })).unwrap();
+      dispatch(createMissionList({ type: missionType, category: missionGenre }));
       Alert.alert('생성 완료', '미션이 성공적으로 생성되었습니다');
-      setIsModalVisible(false);
+      setModalVisible(false);      
+
+
     } catch (err) {
       Alert.alert('에러 발생', err.message || '미션 생성 실패');
     }
@@ -126,18 +128,18 @@ const AIMissionManageScreen = () => {
                 <Text style={styles.outlineButtonText}>미션 생성하기</Text>
             </TouchableOpacity>
             {/* <TouchableOpacity style={styles.filledButton}> */}
-            <Text style={styles.filledText}>주간 미션</Text>
+            {/* <Text style={styles.filledText}>주간 미션</Text> */}
             {/* </TouchableOpacity> */}
         </View>
 
         {/* 미션 카드 리스트 */}
-        {AIMissionList?.map((mission) => (
+        {missionList?.map((mission) => (
             <MissionCard key={mission.id} mission={mission} handleEditClick={handleEditClick}/>
         ))}      
 
-        {missions.map((mission) => (
+        {/* {missions.map((mission) => (
             <MissionCard key={mission.id} mission={mission} handleEditClick={handleEditClick} />
-        ))}
+        ))} */}
       </ScrollView>
 
       {/* 하단 버튼 */}

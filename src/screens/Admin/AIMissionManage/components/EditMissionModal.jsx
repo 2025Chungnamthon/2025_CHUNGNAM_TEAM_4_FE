@@ -3,6 +3,10 @@ import { View, Text, TextInput, TouchableOpacity, Modal, StyleSheet, Dimensions,
 import RNPickerSelect from 'react-native-picker-select';
 import { moderateScale } from 'react-native-size-matters';
 import COLORS from '../../../../constants/colors';
+import { useDispatch } from 'react-redux';
+import { updateMission } from '../../../../redux/slices/missionSlice';
+import { getEnglishLevel } from '../../../../utils/levelMapper';
+import { getEnglishCategory } from '../../../../utils/categoryMapper';
 
 const {width, height} = Dimensions.get('window');
 
@@ -12,6 +16,7 @@ const EditMissionModal = ({
   onSubmit,
   missionData, // ← 기존 카드 정보
 }) => {
+    const dispatch = useDispatch();
   const [type, setType] = useState('');
   const [genre, setGenre] = useState('');
   const [title, setTitle] = useState('');
@@ -34,14 +39,12 @@ const EditMissionModal = ({
   }, [missionData]);
 
   const handleSubmit = () => {
-    onSubmit({
-      id: missionData.id,
-      type,
-      category:genre,
-      title,
-      description,
-      rewardPoints: parseInt(point),
-    });
+    dispatch(updateMission({
+        missionId:missionData.id,
+        updatedData:{title,description,type,level:getEnglishLevel(missionData.level),category:getEnglishCategory(genre),rewardPoints: parseInt(point),}
+    }))
+    // onSubmit({id: missionData.id,type,category:genre,title,description,rewardPoints: parseInt(point),
+    // });
     onClose();
   };
 

@@ -3,6 +3,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AdminMainScreen from '../screens/Admin/AdminMain/AdminMainScreen';
 import AIMissionManageScreen from '../screens/Admin/AIMissionManage/AIMissionManageScreen';
 import UserMissionReviewScreen from '../screens/Admin/UserMissionReview/UserMissionReviewScreen';
+import UserMissionDetailScreen from '../screens/Admin/UserMissionDetail/UserMissionDetailScreen';
 
 
 
@@ -14,6 +15,7 @@ const AdminStack = () => {
         <Stack.Screen name="AdminMainScreen" component={AdminMainScreen} />        
         <Stack.Screen name="AIMissionManageScreen" component={AIMissionManageScreen} />
         <Stack.Screen name="UserMissionReviewScreen" component={UserMissionReviewScreen} />
+        <Stack.Screen name="UserMissionDetailScreen" component={UserMissionDetailScreen} />        
     </Stack.Navigator>
   )
 }

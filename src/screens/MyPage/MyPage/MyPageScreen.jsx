@@ -40,7 +40,7 @@ const MyPageScreen = () => {
           <Text style={styles.bio}>소개글을 작성해주세요.</Text>
         </View>
         <TouchableOpacity onPress={() => navigation.navigate('EditProfile')}>
-          <Text style={styles.editProfileText}>프로필수정 '&gt;'</Text>
+          <Text style={styles.editProfileText}>프로필수정 &gt;</Text>
         </TouchableOpacity>
       </View>
 

@@ -6,43 +6,46 @@ import MissionCard from '../components/MissionCard';
 import MissionDetailModal from '../components/MissionDetailModal';
 import COLORS from '../../../constants/colors';
 import { getLargeCategoryIcon } from '../../../utils/categoryIconMapper';
+import { useSelector } from 'react-redux';
 
 const {width, height} = Dimensions.get('window');
 
-const weeklyMissions = [
-  {
-    id: '1',
-    title: '제로웨이스트 매장 방문',
-    rewardPoints: 500,
-    category: "일상 속 습관",    
-    // icon: getLargeCategoryIcon(category),
-    type: 'WEEKLY',
-    description: '제로웨이스트 매장 방문 후 사진 인증하기\n본인을 인증할 수 있는 사진 2장 첨부 필수',
-  },
-  {
-    id: '2',
-    title: '재활용 분리배출하기',
-    rewardPoints: 450,
-    category: "친환경 이동",    
-    // icon: getLargeCategoryIcon(category),
-    type: 'WEEKLY',
-    description: '플라스틱/캔/종이를 분리배출하는 사진 2장 첨부',
+// const weeklyMissions = [
+//   {
+//     id: '1',
+//     title: '제로웨이스트 매장 방문',
+//     rewardPoints: 500,
+//     category: "일상 속 습관",    
+//     // icon: getLargeCategoryIcon(category),
+//     type: 'WEEKLY',
+//     description: '제로웨이스트 매장 방문 후 사진 인증하기\n본인을 인증할 수 있는 사진 2장 첨부 필수',
+//   },
+//   {
+//     id: '2',
+//     title: '재활용 분리배출하기',
+//     rewardPoints: 450,
+//     category: "친환경 이동",    
+//     // icon: getLargeCategoryIcon(category),
+//     type: 'WEEKLY',
+//     description: '플라스틱/캔/종이를 분리배출하는 사진 2장 첨부',
 
-  },
-  {
-    id: '3',
-    title: '재사용 용기 포장하기',
-    rewardPoints: 500,
-    // icon: getLargeCategoryIcon(category),
-    type: 'WEEKLY',
-    description: '용기를 이용한 포장 모습 인증 사진 2장 첨부',
-    category: "친환경 소비",
-  },
-];
+//   },
+//   {
+//     id: '3',
+//     title: '재사용 용기 포장하기',
+//     rewardPoints: 500,
+//     // icon: getLargeCategoryIcon(category),
+//     type: 'WEEKLY',
+//     description: '용기를 이용한 포장 모습 인증 사진 2장 첨부',
+//     category: "친환경 소비",
+//   },
+// ];
 const WeeklyMissionScreen = ({navigation}) => {
   const [selectedId, setSelectedId] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedMission, setSelectedMission] = useState(null);
+
+  const {weeklyMissions} = useSelector((state)=> state.userMission)
 
   const handleSelect = (id) => setSelectedId(id);
   
@@ -52,6 +55,7 @@ const WeeklyMissionScreen = ({navigation}) => {
   };
 
   const handleNextButton = () => {
+    console.log(selectedId);
     navigation.navigate('DailyMissionSelectScreen', { weeklyMissionId: selectedId });
   }
 

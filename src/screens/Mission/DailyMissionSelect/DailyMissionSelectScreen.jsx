@@ -4,68 +4,78 @@ import MissionDetailModal from '../components/MissionDetailModal';
 import MissionCard from '../components/MissionCard';
 import { moderateScale } from 'react-native-size-matters';
 import COLORS from '../../../constants/colors';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectMissions } from '../../../redux/slices/userMissionSlice';
 
 const {width, height} = Dimensions.get('window');
 
-const DailyMissions = [
-  {
-    id: '1',
-    title: '텀블러 사용하기',
-    rewardPoints: 30,
-    icon: 'storefront-outline',
-    type: '일일 미션',
-    description: '제로웨이스트 매장 방문 후 사진 인증하기\n본인을 인증할 수 있는 사진 2장 첨부 필수',
-    category: "일상 속 습관",
-  },
-  {
-    id: '2',
-    title: '꽃과 나무에 물 주기',
-    rewardPoints: 30,
-    icon: 'trash-outline',
-    type: '일일 미션',
-    description: '플라스틱/캔/종이를 분리배출하는 사진 2장 첨부',
-    category: "친환경 이동",
-  },
-  {
-    id: '3',
-    title: '친환경 캠페인 알리기',
-    rewardPoints: 40,
-    icon: 'cube-outline',
-    type: '일일 미션',
-    description: '용기를 이용한 포장 모습 인증 사진 2장 첨부',
-    category: "친환경 소비",
-  },
-    {
-    id: '4',
-    title: '플로깅 실천하기',
-    rewardPoints: 60,
-    icon: 'cube-outline',
-    type: '일일 미션',
-    description: '용기를 이용한 포장 모습 인증 사진 2장 첨부',
-    category: "재활용/자원순환",
-  },
-    {
-    id: '5',
-    title: '장바구니 지참하기',
-    rewardPoints: 30,
-    icon: 'cube-outline',
-    type: '일일 미션',
-    description: '용기를 이용한 포장 모습 인증 사진 2장 첨부',
-    category: "에너지 절약",
-  },
-];
+// const dailyMissions = [
+//   {
+//     id: '1',
+//     title: '텀블러 사용하기',
+//     rewardPoints: 30,
+//     icon: 'storefront-outline',
+//     type: '일일 미션',
+//     description: '제로웨이스트 매장 방문 후 사진 인증하기\n본인을 인증할 수 있는 사진 2장 첨부 필수',
+//     category: "일상 속 습관",
+//   },
+//   {
+//     id: '2',
+//     title: '꽃과 나무에 물 주기',
+//     rewardPoints: 30,
+//     icon: 'trash-outline',
+//     type: '일일 미션',
+//     description: '플라스틱/캔/종이를 분리배출하는 사진 2장 첨부',
+//     category: "친환경 이동",
+//   },
+//   {
+//     id: '3',
+//     title: '친환경 캠페인 알리기',
+//     rewardPoints: 40,
+//     icon: 'cube-outline',
+//     type: '일일 미션',
+//     description: '용기를 이용한 포장 모습 인증 사진 2장 첨부',
+//     category: "친환경 소비",
+//   },
+//     {
+//     id: '4',
+//     title: '플로깅 실천하기',
+//     rewardPoints: 60,
+//     icon: 'cube-outline',
+//     type: '일일 미션',
+//     description: '용기를 이용한 포장 모습 인증 사진 2장 첨부',
+//     category: "재활용/자원순환",
+//   },
+//     {
+//     id: '5',
+//     title: '장바구니 지참하기',
+//     rewardPoints: 30,
+//     icon: 'cube-outline',
+//     type: '일일 미션',
+//     description: '용기를 이용한 포장 모습 인증 사진 2장 첨부',
+//     category: "에너지 절약",
+//   },
+// ];
 
 const DailyMissionSelectScreen = ({navigation,route}) => {
+  const dispatch = useDispatch();
+
   const [selectedId, setSelectedId] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedMission, setSelectedMission] = useState(null);
   const [selectedIds, setSelectedIds] = useState([]);
 
   const { weeklyMissionId } = route.params;
+
+  const {dailyMissions} = useSelector((state)=> state.userMission)
   
   useEffect(()=>{
     console.log(weeklyMissionId);
   },[weeklyMissionId])
+
+  useEffect(()=>{
+    console.log("dailyMissions IDS",selectedIds)
+  },[selectedIds])
 
   const handleInfoPress = (mission) => {
     setSelectedMission(mission);
@@ -87,7 +97,8 @@ const DailyMissionSelectScreen = ({navigation,route}) => {
 
   const handleSubmitButton = () => {
     // dispatch(weeklyMissionId,dailyMissionIdList:selectedIds)
-    navigation.navigate("MyMissionListScreen");
+    dispatch(selectMissions({dailyMissionIds:selectedIds,weeklyMissionIds:[weeklyMissionId]}))
+    navigation.replace("MyMissionListScreen");
   }    
 
   return (
@@ -114,7 +125,7 @@ const DailyMissionSelectScreen = ({navigation,route}) => {
         )}
       /> */}
       <FlatList
-        data={DailyMissions}
+        data={dailyMissions}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <MissionCard

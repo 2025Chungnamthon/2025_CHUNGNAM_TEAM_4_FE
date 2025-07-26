@@ -17,14 +17,24 @@ const LoginScreen = ({navigation}) => {
   const [isPwFocused, setIsPwFocused] = useState(false);
   const {loginLoading} = useSelector((state)=>state.user)
 
+  // const handleLogin = async() => {
+  //   try {
+  //     const res = await dispatch(loginUser({ email, password })).unwrap();
+  //     console.log("로그인 성공", res);
+  //     navigation.replace("Main");
+  //   } catch (err) {
+  //     Alert.alert("로그인 실패", err);
+  //   }
+  // }
+
   const handleLogin = async() => {
     try {
-      const res = await dispatch(loginUser({ email, password })).unwrap();
+      const res = await dispatch(loginUser({ email:"admin@admin.com", password:"admin123@" })).unwrap();
       console.log("로그인 성공", res);
       navigation.replace("Main");
     } catch (err) {
       Alert.alert("로그인 실패", err);
-    }
+    }    
   }
 
   const handleSignupButton = () => {

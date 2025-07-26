@@ -1,10 +1,48 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native';
 import { getSmallCategoryIcon } from '../../../../utils/categoryIconMapper';
 import { moderateScale } from 'react-native-size-matters';
 import COLORS from '../../../../constants/colors';
+import { useDispatch } from 'react-redux';
+import { activateMission, deleteMission } from '../../../../redux/slices/missionSlice';
 
 const MissionCard = ({ mission, handleEditClick }) => {
+  const dispatch = useDispatch();
+
+  const handleApprove = () => {
+    Alert.alert(
+      '미션 승인',
+      '정말 이 미션을 승인하시겠습니까?',
+      [
+        { text: '취소', style: 'cancel' },
+        {
+          text: '승인',
+          onPress: () => {
+            dispatch(activateMission({missionId:mission.id}));
+          },
+        },
+      ]
+    );
+  };
+
+  const handleReject = () => {
+    Alert.alert(
+      '미션 반려',
+      '정말 이 미션을 반려하시겠습니까?',
+      [
+        { text: '취소', style: 'cancel' },
+        {
+          text: '반려',
+          onPress: () => {
+            console.log("hi")
+            dispatch(deleteMission({missionId:mission.id}));
+          },
+        },
+      ]
+    );
+  };  
+
+
   return (
     <View style={styles.card}>
       <View style={styles.titleRow}>
@@ -23,13 +61,13 @@ const MissionCard = ({ mission, handleEditClick }) => {
       </View>
 
       <Text style={styles.description}>미션 설명: {mission.description}</Text>
-      <Text style={styles.meta}>장르: {mission.category}</Text>
+      <Text style={styles.meta}>장르: {mission.type==="DAILY"?"일일":"주간"} / {mission.category}</Text>
       <Text style={styles.meta}>지급 포인트: {mission.rewardPoints}P</Text>
 
       <View style={styles.buttonRow}>
         <TouchableOpacity style={styles.editButton} onPress={()=>handleEditClick(mission)}><Text>수정하기</Text></TouchableOpacity>
-        <TouchableOpacity style={styles.approveButton}><Text style={{ color: COLORS.approve }}>승인하기</Text></TouchableOpacity>
-        <TouchableOpacity style={styles.rejectButton}><Text style={{ color: COLORS.decline }}>반려하기</Text></TouchableOpacity>
+        <TouchableOpacity style={styles.approveButton} onPress={handleApprove}><Text style={{ color: COLORS.approve }}>승인하기</Text></TouchableOpacity>
+        <TouchableOpacity style={styles.rejectButton} onPress={handleReject}><Text style={{ color: COLORS.decline }}>반려하기</Text></TouchableOpacity>
       </View>
     </View>
   );

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Image } from 'react-native';
 // import MissionCard from './components/MissionCard';
 import { moderateScale } from 'react-native-size-matters';
@@ -6,6 +6,8 @@ import { Dimensions } from 'react-native';
 import COLORS from '../../../constants/colors';
 import ExpandableMissionCard from './components/ExpandableMissionCard';
 import CertificationModal from './components/CertificationModal';
+import { useDispatch } from 'react-redux';
+import { fetchUserMissions } from '../../../redux/slices/userMissionSlice';
 // import { categoryColors } from '../../constants/colors';
 
 const {width, height} = Dimensions.get('window');
@@ -58,10 +60,14 @@ const missionData = [
 
 
 const MyMissionListScreen = () => {
+  const dispatch = useDispatch();
   const [expandedIndex, setExpandedIndex] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedMission, setSelectedMission] = useState(null); // 선택된 미션 정보  
   
+  useEffect(()=>{
+    dispatch(fetchUserMissions());
+  },[])
 
   const toggleExpand = (index) => {
     setExpandedIndex(prev => (prev === index ? null : index));

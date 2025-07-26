@@ -22,7 +22,7 @@ const icons = {
 const TabNavigator = () => {
   return (
     <Tab.Navigator
-      initialRouteName='MyPage'    
+      initialRouteName='Home'    
       screenOptions={({ route }) => ({
         headerShown: false,
         tabBarShowLabel: false, // 기본 라벨 제거 (우리가 직접 구현)
