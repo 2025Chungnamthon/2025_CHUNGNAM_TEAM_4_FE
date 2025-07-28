@@ -1,33 +1,52 @@
 // screens/MyPageScreen.jsx
-import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, FlatList, Dimensions } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, Text, StyleSheet, Image, TouchableOpacity, FlatList, Dimensions, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { moderateScale } from 'react-native-size-matters';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { deleteTokens } from '../../../utils/tokenStorage';
+import { clearLogoutSuccess, clearUserInfo, logoutUser } from '../../../redux/slices/userSlice';
 
 const {width, height} = Dimensions.get('window');
 
 const MyPageScreen = () => {
+  const dispatch = useDispatch();
   const navigation = useNavigation();
   const {userInfo} = useSelector((state)=>state.user);
+
+  const logoutLoading = useSelector((state) => state.user.loading.logoutUser);
+  const logoutSuccess = useSelector((state) => state.user.success.logoutUser);
+  const logoutError = useSelector((state) => state.user.error.logoutUser);
 
   const adminMenuItems = [
     { label: '관리자 화면', func: ()=>navigation.navigate('AdminStack')},    
     { label: '내정보 확인', func: ()=>navigation.navigate('UserInfoScreen')},
     { label: '포인트 사용 내역', func: ()=>navigation.navigate('PointHistoryScreen')},
     { label: '환경설정', func: ()=>navigation.navigate('SettingsScreen')},
-    { label: '로그아웃', func: handleLogout, route: 'Logout' },
+    { label: '로그아웃', func: handleLogout},
   ];
 
   const userMenuItems =[
     { label: '내정보 확인', func: ()=>navigation.navigate('UserInfoScreen')},
     { label: '포인트 사용 내역', func: ()=>navigation.navigate('PointHistoryScreen')},
     { label: '환경설정', func: ()=>navigation.navigate('SettingsScreen')},
-    { label: '로그아웃', func: handleLogout, route: 'Logout' },    
+    { label: '로그아웃', func: ()=>handleLogout()},    
   ]
 
-  const handleLogout=()=>{
+  useEffect(()=>{
+    console.log("logoutSuccess",logoutSuccess)
+    if(logoutSuccess){
+      navigation.navigate("Login");
+    }
+  },[logoutSuccess])
 
+  useEffect(()=>{
+    dispatch(clearLogoutSuccess());
+  })
+
+  const handleLogout=()=>{
+    console.log("start logout")
+    dispatch(logoutUser());
   }
 
   const renderMenuItem = ({ item }) => (
@@ -35,6 +54,13 @@ const MyPageScreen = () => {
       <Text style={styles.menuText}>{item.label}</Text>
     </TouchableOpacity>
   );
+
+  if(logoutLoading)
+    return(
+      <View style={styles.spinnerBox}>
+        <ActivityIndicator size={80}/>
+      </View>
+    )
 
   return (
     <View style={styles.container}>
@@ -47,7 +73,9 @@ const MyPageScreen = () => {
         <View style={styles.profileTextContainer}>
           <Text style={styles.username}>{userInfo?.nickname}</Text>
           {/* <Text style={styles.bio}>소개글을 작성해주세요.</Text> */}
-          <Text style={styles.bio}>{userInfo.role==="ADMIN"?"관리자":"사용자"}</Text>
+          <Text style={styles.bio}>
+            {userInfo ? (userInfo.role === "ADMIN" ? "관리자" : "사용자") : ""}
+          </Text>
         </View>
         <TouchableOpacity onPress={() => navigation.navigate('EditProfile')}>
           <Text style={styles.editProfileText}>프로필수정 &gt;</Text>
@@ -126,5 +154,9 @@ const styles = StyleSheet.create({
   },
   menuText: {
     fontSize: 16,
+  },
+  spinnerBox:{
+    height:height,
+    justifyContent:"center",
   },
 });

@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import api from "../../utils/api";
-import { saveAccessToken, saveRefreshToken } from "../../utils/tokenStorage";
+import { deleteTokens, saveAccessToken, saveRefreshToken } from "../../utils/tokenStorage";
 import { Alert } from "react-native";
 
 export const loginUser = createAsyncThunk(
@@ -8,13 +8,21 @@ export const loginUser = createAsyncThunk(
   async ({ email, password }, { rejectWithValue }) => {
     try {
       const response = await api.post("/api/users/sign-in", { email, password })
-      console.log(response.data); 
+      // const response = await fetch(`https://chungnam4team-g9e7dze4hhdnhccg.koreacentral-01.azurewebsites.net/api/users/sign-in`, {
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //   },
+      //   body: JSON.stringify({ email, password }),
+      // });  
+
+
+      console.log("response 응답",response.data); 
 
       const accessToken = response.data.accessToken
       const refreshToken = response.data.refreshToken
       if(accessToken){
         await saveAccessToken(accessToken)
-        console.log
       }
       if(refreshToken){
         await saveRefreshToken(refreshToken);
@@ -49,7 +57,7 @@ export const checkEmailDup = createAsyncThunk(
       }catch(error){
         console.log("error: ",error.response.data);
         Alert.alert("중복 확인",error.response.data.message);        
-        return rejectWithValue(error.response.data.message)
+        return rejectWithValue(error.response.data.message);
       }
     }
   )
@@ -87,6 +95,22 @@ export const fetchUserMainInfo = createAsyncThunk(
   }
 );
 
+export const logoutUser = createAsyncThunk(
+  'user/logoutUser',
+  async (_, { dispatch, rejectWithValue }) => {
+    try {
+      const response = await api.post('/api/auth/logout'); // accessToken은 api 인터셉터에 의해 자동 포함
+      console.log("response",response.data);
+      await deleteTokens(); // SecureStorage 토큰 삭제
+      dispatch(clearUserInfo());
+      return response.data;
+    } catch (error) {
+      console.log(error);
+      return rejectWithValue(error.response?.data?.message || '로그아웃 실패');
+    }
+  }
+);
+
 
 const userSlice = createSlice({
     name:"user",
@@ -103,18 +127,21 @@ const userSlice = createSlice({
         checkEmailDup:false,
         registerUser:false,
         fetchUserMainInfo:false,
+        logoutUser:false,
       },
       success:{
         loginUser:false,
         checkEmailDup:false,
         registerUser:false,
         fetchUserMainInfo:false,
+        logoutUser:false,
       },
       error:{
         loginUser: null,
         checkEmailDup: null,
         registerUser: null,
         fetchUserMainInfo: null,
+        logoutUser:null,
       },
       userDailyMissions:[],
       userWeeklyMissions:[],
@@ -126,6 +153,12 @@ const userSlice = createSlice({
       clearRegisterUserSuccess: (state)=>{
         state.success.registerUser=false;
       },
+      clearUserInfo: (state)=>{
+        state.userInfo = null;
+      },
+      clearLogoutSuccess: (state)=>{
+        state.success.logoutUser = null;
+      }
     },
     extraReducers: (builder)=>{
       builder
@@ -151,7 +184,7 @@ const userSlice = createSlice({
               state.error.checkEmailDup=null;
               state.success.checkEmailDup=true;
             }else if(action.payload.exists===true){
-              state.loading.checkEmailDup=false;            
+              state.loading.checkEmailDup=false;
               state.error.checkEmailDup=action.payload.message;
             }
         })        
@@ -186,8 +219,21 @@ const userSlice = createSlice({
           state.loading.fetchUserMainInfo = false;
           state.error.fetchUserMainInfo = action.payload;
         })
+        .addCase(logoutUser.pending,(state)=>{
+          state.loading.logoutUser=true;
+          state.error.logoutUser=null;
+        })
+        .addCase(logoutUser.fulfilled, (state)=>{
+          state.loading.logoutUser=false;
+          state.error.logoutUser=null;
+          state.success.logoutUser=true;
+        })
+        .addCase(logoutUser.rejected,(state,action)=>{
+          state.loading.logoutUser=false;            
+          state.error.logoutUser=action.payload.message;
+        })   
     },
 })
 
-export const {clearEmailDupSuccess,clearRegisterUserSuccess} = userSlice.actions;
+export const {clearEmailDupSuccess,clearRegisterUserSuccess, clearUserInfo, clearLogoutSuccess} = userSlice.actions;
 export default userSlice.reducer;

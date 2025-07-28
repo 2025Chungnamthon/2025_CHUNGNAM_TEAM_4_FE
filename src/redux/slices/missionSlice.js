@@ -178,7 +178,7 @@ const missionSlice = createSlice({
       .addCase(createMission.fulfilled, (state, action) => {
         state.loading.createMission = false;
         state.success.createMission = true;
-        state.missionList.push(action.payload); // 예시로 추가
+        // state.missionList.push(action.payload); // 예시로 추가
       })
       .addCase(createMission.rejected, (state, action) => {
         state.loading.createMission = false;

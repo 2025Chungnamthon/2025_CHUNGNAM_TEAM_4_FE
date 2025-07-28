@@ -16,8 +16,12 @@ const MAX_HEIGHT = 120; // 확장 영역 높이
 const ANIMATION_DURATION = 300;
 
 const ExpandableMissionCard = ({ mission, isExpanded, onToggle, openCertificationModal }) => {
-  const { id, category, type, title, rewardPoints, description } = mission;
+  const { id, category, type, title, rewardPoints, description } = mission.mission;
   const isWeekly = type === 'WEEKLY';
+
+  useEffect(()=>{
+    console.log("misonnn",mission)
+  },[])
 
   const animatedHeight = useRef(new Animated.Value(0)).current;
   const animatedOpacity = useRef(new Animated.Value(0)).current;
@@ -78,11 +82,17 @@ const ExpandableMissionCard = ({ mission, isExpanded, onToggle, openCertificatio
             resizeMode="contain"    
         />
         <Text style={styles.title}>{title}</Text>
-        {!isExpanded && (
-          <TouchableOpacity style={styles.checkButton} onPress={onToggle}>
-            <Text style={styles.checkText}>확인하기</Text>
+        {mission.userMissionStatus==="IN_PROGRESS"?
+          !isExpanded && (
+            <TouchableOpacity style={styles.checkButton} onPress={onToggle}>
+              <Text style={styles.checkText}>확인하기</Text>
+            </TouchableOpacity>
+          )
+        :
+          <TouchableOpacity style={styles.inProgressButton} onPress={onToggle} disabled={true}>
+            <Text style={styles.inProgressText}>검토중</Text>
           </TouchableOpacity>
-        )}
+        }
       </View>
 
       {/* 확장 영역 */}
@@ -152,6 +162,17 @@ const styles = StyleSheet.create({
   checkText: {
     color: COLORS.green200,
     // fontWeight: 'bold',
+  },
+  inProgressButton:{
+    borderWidth: 1,
+    borderColor: COLORS.green200,
+    backgroundColor: COLORS.green200,
+    borderRadius: 8,
+    paddingVertical: 4,
+    paddingHorizontal: 10,    
+  },
+  inProgressText:{
+    color:"white",
   },
   expandBox: {
     overflow: 'hidden',

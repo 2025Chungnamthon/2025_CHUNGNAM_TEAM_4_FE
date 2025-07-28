@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, FlatList, StyleSheet, Dimensions } from 'react-native';
+import { View, Text, TouchableOpacity, FlatList, StyleSheet, Dimensions, ActivityIndicator } from 'react-native';
 import React, { useEffect, useState } from 'react'
 import MissionDetailModal from '../components/MissionDetailModal';
 import MissionCard from '../components/MissionCard';
@@ -60,6 +60,10 @@ const {width, height} = Dimensions.get('window');
 const DailyMissionSelectScreen = ({navigation,route}) => {
   const dispatch = useDispatch();
 
+  const loading = useSelector((state) => state.userMission.loading.selectMissions);
+  const success = useSelector((state) => state.userMission.success.selectMissions);
+  const error = useSelector((state) => state.userMission.error.selectMissions);
+
   const [selectedId, setSelectedId] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedMission, setSelectedMission] = useState(null);
@@ -76,6 +80,10 @@ const DailyMissionSelectScreen = ({navigation,route}) => {
   useEffect(()=>{
     console.log("dailyMissions IDS",selectedIds)
   },[selectedIds])
+
+  useEffect(()=>{
+    console.log("daily missions",dailyMissions)
+  },[dailyMissions])
 
   const handleInfoPress = (mission) => {
     setSelectedMission(mission);
@@ -98,8 +106,13 @@ const DailyMissionSelectScreen = ({navigation,route}) => {
   const handleSubmitButton = () => {
     // dispatch(weeklyMissionId,dailyMissionIdList:selectedIds)
     dispatch(selectMissions({dailyMissionIds:selectedIds,weeklyMissionIds:[weeklyMissionId]}))
-    navigation.replace("MyMissionListScreen");
-  }    
+  }
+
+  useEffect(() => {
+    if (success) {
+      navigation.replace("MyMissionListScreen");
+    }
+  }, [success, navigation]);
 
   return (
     <View style={styles.container}>
@@ -144,15 +157,19 @@ const DailyMissionSelectScreen = ({navigation,route}) => {
         mission={selectedMission}
       />
 
-    {selectedIds.length === 3 && (
-        <TouchableOpacity
+      {loading ? (
+        <ActivityIndicator size="large" color={COLORS.green300} />
+      ) : (
+        selectedIds.length === 3 && (
+          <TouchableOpacity
             style={styles.submitBtn}
             disabled={selectedIds.length !== 3}
             onPress={handleSubmitButton}
-        >
+          >
             <Text style={styles.submitText}>제출하기</Text>
-        </TouchableOpacity>
-    )}
+          </TouchableOpacity>
+        )
+      )}
 
     </View>
   )

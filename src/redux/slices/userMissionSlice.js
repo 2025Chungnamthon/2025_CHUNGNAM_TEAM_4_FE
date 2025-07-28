@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import api from '../../utils/api';
+import { logoutUser } from './userSlice';
 
 // 1. 사용자 메인 정보 조회
 // export const fetchUserMainInfo = createAsyncThunk(
@@ -75,7 +76,8 @@ export const submitMission = createAsyncThunk(
       formData.append('userMissionId', String(userMissionId));
       formData.append('description', description);
 
-      console.log("images",images)
+      // console.log("images",images)
+      console.log("userMissionID",userMissionId)
 
       // ✅ 이미지들 추가 (RequestPart)
       images.forEach((img, index) => {
@@ -100,7 +102,7 @@ export const submitMission = createAsyncThunk(
 
       return response.data;
     } catch (error) {
-      console.log("error: ", error);
+      console.log("error: ", error.response.data);
       return rejectWithValue(error.response?.data?.message || '제출 실패');
     }
   }
@@ -198,17 +200,45 @@ const userMissionSlice = createSlice({
         state.missionDetail = action.payload;
       })
 
+      .addCase(selectMissions.pending, (state, action) => {
+        state.loading.selectMissions = true;
+        state.success.selectMissions = false;
+        state.error.selectMissions = null;
+      })
       .addCase(selectMissions.fulfilled, (state, action) => {
-        // 선택된 결과 반영은 필요에 따라 구현
+        state.loading.selectMissions = false;
+        state.success.selectMissions = true;
       })
-
+      .addCase(selectMissions.rejected, (state, action) => {
+        state.loading.selectMissions = false;
+        state.error.selectMissions = action.payload;
+      })            
+      .addCase(submitMission.pending, (state, action) => {
+        state.loading.submitMission = true;
+        state.success.submitMission = false;
+        state.error.submitMission = null;
+      })
       .addCase(submitMission.fulfilled, (state, action) => {
-        state.submissionResult = action.payload;
+        state.loading.submitMission = false;
+        state.success.submitMission = true;
       })
-
       .addCase(submitMission.rejected, (state, action) => {
-        state.error = action.payload;
-      });
+        state.loading.submitMission = false;
+        state.error.submitMission = action.payload;
+      })
+      .addCase(logoutUser.pending, (state, action) => {
+        state.loading.logoutUser = true;
+        state.success.logoutUser = false;
+        state.error.logoutUser = null;
+      })
+      .addCase(logoutUser.fulfilled, (state, action) => {
+        state.loading.logoutUser = false;
+        state.success.logoutUser = true;
+      })
+      .addCase(logoutUser.rejected, (state, action) => {
+        state.loading.logoutUser = false;
+        state.error.logoutUser = action.payload;
+      })      
   }
 });
 

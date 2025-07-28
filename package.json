@@ -35,7 +35,8 @@
     "react-native-size-matters": "^0.4.2",
     "react-native-web": "^0.20.0",
     "react-redux": "^9.2.0",
-    "redux": "^5.0.1"
+    "redux": "^5.0.1",
+    "expo-file-system": "~18.1.11"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

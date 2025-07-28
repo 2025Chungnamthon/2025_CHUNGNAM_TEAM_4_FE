@@ -1,6 +1,11 @@
 import axios from "axios";
 import { BACKEND_URL } from '@env';
-import { getAccessToken } from "./tokenStorage";
+import { 
+  getAccessToken, 
+  getRefreshToken,
+  saveAccessToken,
+  deleteTokens,
+} from "./tokenStorage";
 
 
 const api = axios.create({
@@ -12,16 +17,86 @@ const api = axios.create({
 });
 
 
+let isRefreshing = false;
+let failedQueue = [];
+
+const processQueue = (error, token = null) => {
+  failedQueue.forEach(prom => {
+    if (error) {
+      prom.reject(error);
+    } else {
+      prom.resolve(token);
+    }
+  });
+  failedQueue = [];
+};
+
+
 // // 토큰 자동 포함 (선택)
 api.interceptors.request.use(async(config) => {
-  // const token = await getAccessToken(); // 필요시 AsyncStorage에서 불러오기
-  const token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyIiwicm9sZSI6IkFETUlOIiwidHlwZSI6IkFDQ0VTUyIsImlhdCI6MTc1MzY3NTY3NywiZXhwIjoxNzUzNjc5Mjc3fQ.VAFfBMfXTzW2g4UxI5tn6yXJ7REWG8drvs3t3Th8l76V_5_T3lVOsl7vVjn8T5t6J-SW18go3KwVd1J0OwGefg"
+  const token = await getAccessToken(); 
+  // const token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxMSIsInJvbGUiOiJVU0VSIiwidHlwZSI6IkFDQ0VTUyIsImlhdCI6MTc1MzcwNjAzOCwiZXhwIjoxNzUzNzA5NjM4fQ.V1ha2MpraJ24Yv9WCRIjarRe-xLP3j6X1zzlg7FpzDeL-121WKc8zOWIJ5pTee4SWiQr6xVnpwYlIrhkI2Ic1w"
   if (token) {
-    // console.log("header token:  ",token);
+    console.log("header token:  ",token);
     config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
 });
+
+// ✅ 응답 인터셉터: accessToken 만료 시 → refreshToken으로 재발급
+api.interceptors.response.use(
+  response => response,
+  async error => {
+    const originalRequest = error.config;
+
+    // accessToken 만료(401) + 중복 재시도 방지
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+
+      if (isRefreshing) {
+        return new Promise((resolve, reject) => {
+          failedQueue.push({
+            resolve: token => {
+              originalRequest.headers.Authorization = "Bearer " + token;
+              resolve(api(originalRequest));
+            },
+            reject: err => {
+              reject(err);
+            },
+          });
+        });
+      }
+
+      isRefreshing = true;
+
+      try {
+        const refreshToken = await getRefreshToken();
+        if (!refreshToken) throw new Error("No refresh token found");
+
+        const res = await axios.post(`${BACKEND_URL}/api/auth/refresh`, {
+          refreshToken,
+        });
+
+        const newAccessToken = res.data.accessToken;
+        await saveAccessToken(newAccessToken);
+
+        processQueue(null, newAccessToken);
+
+        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+        return api(originalRequest); // 💥 재시도
+      } catch (refreshError) {
+        processQueue(refreshError, null);
+        await deleteTokens(); // 모든 토큰 삭제
+        // ❗ 여기에 로그아웃 처리나 로그인 페이지 이동 로직 넣을 수 있음
+        return Promise.reject(refreshError);
+      } finally {
+        isRefreshing = false;
+      }
+    }
+
+    return Promise.reject(error);
+  }
+);
 
 
 export default api;

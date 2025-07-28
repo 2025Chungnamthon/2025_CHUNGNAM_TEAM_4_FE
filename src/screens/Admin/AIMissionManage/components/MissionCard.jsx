@@ -1,13 +1,18 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Image, Alert, ActivityIndicator } from 'react-native';
 import { getSmallCategoryIcon } from '../../../../utils/categoryIconMapper';
 import { moderateScale } from 'react-native-size-matters';
 import COLORS from '../../../../constants/colors';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { activateMission, deleteMission } from '../../../../redux/slices/missionSlice';
 
 const MissionCard = ({ mission, handleEditClick }) => {
   const dispatch = useDispatch();
+
+  const approveLoading = useSelector((state) => state.mission.loading.activateMission);
+  const approveError = useSelector((state) => state.mission.error.activateMission);  
+  const rejectLoading = useSelector((state) => state.mission.loading.deleteMission);
+  const rejectError = useSelector((state) => state.mission.error.deleteMission);    
 
   const handleApprove = () => {
     Alert.alert(
@@ -66,8 +71,17 @@ const MissionCard = ({ mission, handleEditClick }) => {
 
       <View style={styles.buttonRow}>
         <TouchableOpacity style={styles.editButton} onPress={()=>handleEditClick(mission)}><Text>수정하기</Text></TouchableOpacity>
-        <TouchableOpacity style={styles.approveButton} onPress={handleApprove}><Text style={{ color: COLORS.approve }}>승인하기</Text></TouchableOpacity>
-        <TouchableOpacity style={styles.rejectButton} onPress={handleReject}><Text style={{ color: COLORS.decline }}>반려하기</Text></TouchableOpacity>
+        <TouchableOpacity style={styles.approveButton} onPress={handleApprove}>
+          {approveLoading?
+            <ActivityIndicator size={15} color="white"/>
+          :
+            <Text style={{ color: COLORS.approve }}>승인하기</Text>
+          }
+          
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.rejectButton} onPress={handleReject}>
+          <Text style={{ color: COLORS.decline }}>반려하기</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );

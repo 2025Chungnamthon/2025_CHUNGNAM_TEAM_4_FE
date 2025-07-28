@@ -1,5 +1,5 @@
 // components/CertificationModal.jsx
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Modal,
   View,
@@ -10,6 +10,7 @@ import {
   Dimensions,
   Alert,
   TextInput,
+  ActivityIndicator,
 } from 'react-native';
 import { moderateScale } from 'react-native-size-matters';
 import COLORS from '../../../../constants/colors';
@@ -20,14 +21,22 @@ import { getSmallCategoryIcon } from '../../../../utils/categoryIconMapper';
 import PhotoUploader from './PhotoUploader';
 import { submitMission } from '../../../../redux/slices/userMissionSlice';
 import * as mime from 'react-native-mime-types';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 const {width, height} = Dimensions.get('window');
 
 const CertificationModal = ({ visible, mission, onClose }) => {
   const dispatch = useDispatch();
-    const [selectedImages, setSelectedImages] = useState([]); // 배열로 변경
-    const [certText, setCertText] = useState('');
+  const [selectedImages, setSelectedImages] = useState([]); // 배열로 변경
+  const [certText, setCertText] = useState('');
+
+  const loading = useSelector((state) => state.userMission.loading.submitMission);
+  const success = useSelector((state) => state.userMission.success.submitMission);
+  const error = useSelector((state) => state.userMission.error.submitMission);
+
+  // useEffect(()=>{
+  //   console.log("modal mission",mission)
+  // },[mission])
 
     // const handleSubmit = () => {
     //     dispatch(submitMission({userMissionId,selectedImages,certText}));
@@ -56,11 +65,11 @@ const CertificationModal = ({ visible, mission, onClose }) => {
         };
       });
 
-      console.log("images files before api", imageFiles)
+      console.log("mission data", mission)
 
       dispatch(
         submitMission({
-          userMissionId: mission?.userMissionId || mission?.id, // 상황에 따라 id 확인
+          userMissionId: mission?.userMissionId, // 상황에 따라 id 확인
           description: certText,
           images: imageFiles,
         })
@@ -90,14 +99,14 @@ const CertificationModal = ({ visible, mission, onClose }) => {
             {/* 미션 정보 */}
             <View style={styles.firstRow}>
                 <Text style={styles.category}>
-                    {mission?.type === 'weekly' ? '주간 미션' : '일일 미션'}
+                    {mission?.mission.type === 'weekly' ? '주간 미션' : '일일 미션'}
                 </Text>
-                <Text style={styles.point}>지급 포인트: {mission?.rewardPoints}P</Text>
+                <Text style={styles.point}>지급 포인트: {mission?.mission.rewardPoints}P</Text>
             </View>
 
             <View style={styles.titleRow}>
                 <Image
-                    source={getSmallCategoryIcon(mission?.category)}
+                    source={getSmallCategoryIcon(mission?.mission.category)}
                     style={{
                         height:moderateScale(18),
                         width:moderateScale(18),
@@ -106,10 +115,10 @@ const CertificationModal = ({ visible, mission, onClose }) => {
                     }}
                     resizeMode="contain"    
                 />
-                <Text style={styles.missionTitle}>{mission?.title}</Text>
+                <Text style={styles.missionTitle}>{mission?.mission.title}</Text>
             </View>
           
-            <Text style={styles.description}>미션 설명: {mission?.description}</Text>
+            <Text style={styles.description}>미션 설명: {mission?.mission.description}</Text>
             {/* <Text style={styles.description}>인증 방법: {mission?.method}</Text> */}
 
             {/* 파일 첨부 */}
@@ -149,7 +158,11 @@ const CertificationModal = ({ visible, mission, onClose }) => {
             {/* <Text style={styles.or}>or</Text> */}
 
             <TouchableOpacity onPress={handleSubmit} style={styles.cameraBtn}>
-                <Text style={styles.cameraText}>제출하기</Text>
+              {loading?
+                <ActivityIndicator size={20} color="white"/>
+              :
+                <Text style={styles.cameraText}>제출하기</Text> 
+              }              
             </TouchableOpacity>
 
             {/* <TouchableOpacity style={styles.textBtn}>

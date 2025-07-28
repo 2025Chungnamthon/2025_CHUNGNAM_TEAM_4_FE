@@ -1,4 +1,4 @@
-import { View, Text, TextInput, TouchableOpacity, Image, StyleSheet, Linking, Dimensions, Animated } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Image, StyleSheet, Linking, Dimensions, Animated, ActivityIndicator } from 'react-native';
 import React, { useEffect, useRef, useState } from 'react'
 import { moderateScale } from 'react-native-size-matters';
 import { useDispatch, useSelector } from 'react-redux';
@@ -39,7 +39,7 @@ const LoginScreen = ({navigation}) => {
 
   // const handleLogin = async() => {
   //   try {
-  //     const res = await dispatch(loginUser({ email:"user9@gmail.com", password:"user123@" })).unwrap();
+  //     const res = await dispatch(loginUser({ email:"user15@gmail.com", password:"user123@" })).unwrap();
   //     console.log("로그인 성공", res);
   //     navigation.replace("Main");
   //   } catch (err) {
@@ -68,7 +68,7 @@ const LoginScreen = ({navigation}) => {
 
         {/* 버튼 */}
         <TouchableOpacity onPress={handleLogin} style={styles.loginButton}>
-          {loginLoading?<LoadingSpinner/>:<Text style={styles.loginButtonText}>로그인</Text>}
+          {loginLoading?<ActivityIndicator size="small" color="white"/>:<Text style={styles.loginButtonText}>로그인</Text>}
         </TouchableOpacity>
 
         <TouchableOpacity onPress={handleSignupButton} style={styles.signupButton}>

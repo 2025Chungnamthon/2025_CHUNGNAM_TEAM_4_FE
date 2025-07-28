@@ -2,6 +2,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React from 'react'
 import { moderateScale } from 'react-native-size-matters'
 import { getKoreanStatus } from '../../../utils/statusMapper'
+import { getKoreanMissionStatus } from '../../../utils/missionStatusMapper'
 
 const MissionCard = ({mission,missionStatus}) => {
   const truncateText = (text, maxLength = 15) => {
@@ -26,7 +27,8 @@ const MissionCard = ({mission,missionStatus}) => {
               <Text style={styles.missionTitle}>{truncateText(mission.title)}</Text>
               <Text style={styles.missionPoints}>지급 포인트: {mission.rewardPoints}P</Text>
           </View>
-          <TouchableOpacity style={styles.btnSmall}><Text style={styles.btnText}>{getKoreanStatus(missionStatus)}</Text></TouchableOpacity>
+          
+          <TouchableOpacity style={missionStatus==="IN_PROGRESS"?styles.btnSmall:styles.btnInProgress}><Text style={missionStatus==="IN_PROGRESS"?styles.btnText:styles.textInProgress}>{getKoreanMissionStatus(missionStatus)}</Text></TouchableOpacity>
       </View>      
     )
   }
@@ -60,5 +62,19 @@ const styles = StyleSheet.create({
   },
   btnText:{
     color:"#17704B",
-  }
+    // fontSize:moderateScale(14),
+  },
+  btnInProgress:{
+    backgroundColor:'#17704B',
+    borderWidth: 1,
+    borderColor: '#17704B',
+    paddingHorizontal: 14,
+    paddingVertical: 4,
+    borderRadius: 8,    
+  },
+  textInProgress:{
+    color:"white",
+    // fontSize:moderateScale(13),
+    fontWeight:600,
+  },
 })

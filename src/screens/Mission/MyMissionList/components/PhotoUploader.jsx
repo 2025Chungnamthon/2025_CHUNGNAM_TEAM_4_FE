@@ -9,6 +9,7 @@ import {
   ScrollView,
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
+import * as FileSystem from 'expo-file-system';
 import FullImageModal from './FullImageModal';
 
 const PhotoUploader = ({ images, setImages, maxCount = 3 }) => {
@@ -31,6 +32,17 @@ const PhotoUploader = ({ images, setImages, maxCount = 3 }) => {
     ]);
   };
 
+  const checkFileSize = async (uri) => {
+    try {
+      const fileInfo = await FileSystem.getInfoAsync(uri);
+      const fileSizeInMB = fileInfo.size / (1024 * 1024);
+      return fileSizeInMB <= 10; // 15MB 이하만 통과
+    } catch (error) {
+      console.warn('파일 크기 확인 실패:', error);
+      return false;
+    }
+  };
+
   const openCamera = async () => {
     const { granted } = await ImagePicker.requestCameraPermissionsAsync();
     if (!granted) {
@@ -44,7 +56,13 @@ const PhotoUploader = ({ images, setImages, maxCount = 3 }) => {
     });
 
     if (!result.canceled) {
-      addImage(result.assets[0].uri);
+      const uri = result.assets[0].uri;
+      const isValid = await checkFileSize(uri);
+      if (!isValid) {
+        Alert.alert('파일 크기 초과', '이미지 파일은 15MB 이하만 첨부 가능합니다.');
+        return;
+      }
+      addImage(uri);
     }
   };
 
@@ -61,7 +79,13 @@ const PhotoUploader = ({ images, setImages, maxCount = 3 }) => {
     });
 
     if (!result.canceled) {
-      addImage(result.assets[0].uri);
+      const uri = result.assets[0].uri;
+      const isValid = await checkFileSize(uri);
+      if (!isValid) {
+        Alert.alert('파일 크기 초과', '이미지 파일은 10MB 이하만 첨부 가능합니다.');
+        return;
+      }
+      addImage(uri);
     }
   };
 
