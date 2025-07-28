@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, ActivityIndicator, Dimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import UserMissionReviewCard from './components/MissionReviewCard';
 import { Ionicons } from '@expo/vector-icons';
 import FilterDropdown from './components/FilterDropdown';
+import { fetchChallenges } from '../../../redux/slices/challengeSlice';
+import { useDispatch, useSelector } from 'react-redux';
 
 const missions = [
   {
@@ -38,25 +40,58 @@ const missions = [
   },
 ];
 
+const {width,height} = Dimensions.get('window');
+
+const statusMap = {
+  '요청': '대기',
+  '거절': '반려',
+  '승인': '승인',
+  '진행중': '진행중',
+};
+
+const reverseStatusMap = {
+  '대기': 'PENDING',
+  '반려': 'REJECTED',
+  '승인': 'COMPLETED',
+  '진행중': 'IN_PROGRESS',
+};
+
 const UserMissionReviewScreen = () => {
   const navigation = useNavigation();
+  const dispatch = useDispatch();
+
+  const loading = useSelector((state) => state.challenge.loading.fetchChallenges);
+  const success = useSelector((state) => state.challenge.success.fetchChallenges);
+  const error = useSelector((state) => state.challenge.error.fetchChallenges);
+  const {challengeList} = useSelector((state)=>state.challenge)
+
   const [sortedMissions, setSortedMissions] = useState(missions);
   const [statusFilter, setStatusFilter] = useState('PENDING'); // 기본값: 대기 
   
+
+  // useEffect(()=>{
+  //   dispatch(fetchChallenges('PENDING'));
+  // },[])
+
   // ✅ 상태 필터 변경 시 API 호출
   useEffect(() => {
-    fetchMissionsByStatus(statusFilter);
+    console.log("mapped status filter",statusFilter)
+    dispatch(fetchChallenges(statusFilter));
   }, [statusFilter]);
+
+  useEffect(()=>{
+    console.log("challenge list",challengeList);
+  },[challengeList])
   
   // ✅ API 호출 함수
-  const fetchMissionsByStatus = async (status) => {
-    try {
-      // const response = await axios.get(`https://your-api.com/api/missions?status=${status}`);
-      // setSortedMissions(response.data); // 서버에서 받은 미션 리스트 저장
-    } catch (error) {
-      console.error('미션 가져오기 실패:', error);
-    }
-  };  
+  // const fetchMissionsByStatus = async (status) => {
+  //   try {
+  //     // const response = await axios.get(`https://your-api.com/api/missions?status=${status}`);
+  //     // setSortedMissions(response.data); // 서버에서 받은 미션 리스트 저장
+  //   } catch (error) {
+  //     console.error('미션 가져오기 실패:', error);
+  //   }
+  // };  
 
   const handleCardPress = (missionId) => {
     navigation.navigate('UserMissionDetailScreen', { missionId });
@@ -80,14 +115,27 @@ const UserMissionReviewScreen = () => {
 
 
       {/* 미션 카드 리스트 */}
-      <FlatList
-        data={sortedMissions}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <UserMissionReviewCard mission={item} onPress={() => handleCardPress(item.id)} />
-        )}
-        contentContainerStyle={{ paddingBottom: 20 }}
-      />
+      {loading?
+        <View style={styles.spinnerBox}>
+          <ActivityIndicator size={80} color="gray"/>
+        </View>
+      :
+        challengeList.length===0?
+        <View style={styles.spinnerBox}>
+          <Text style={styles.missionText}>미션 목록 없음. 다른 항목으로 시도해주세요</Text>
+        </View>
+        :
+        <FlatList
+          data={challengeList}
+          keyExtractor={(item) => item.challenge_id}
+          renderItem={({ item }) => {
+            return(
+            <UserMissionReviewCard mission={item} missionInfo={item.mission_info} statusMap={statusMap} onPress={() => handleCardPress(item.challenge_id)} />
+          )}}
+          contentContainerStyle={{ paddingBottom: 20 }}
+        />
+      }
+      
     </View>
   );
 };
@@ -109,6 +157,14 @@ const styles = StyleSheet.create({
     position:"absolute",
     left:0,
   },
+  spinnerBox:{
+    height:height*0.7,
+    justifyContent:"center",
+    // borderWidth:1,
+  },
+  missionText:{
+    textAlign:"center",
+  }
 });
 
 export default UserMissionReviewScreen;

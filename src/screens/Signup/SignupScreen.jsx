@@ -1,14 +1,22 @@
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, ScrollView, Alert } from 'react-native';
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import CustomCheckbox from './components/CustomCheckBox';
 import InputWithIcon from './components/InputWithIcon';
 import { moderateScale } from 'react-native-size-matters';
 import EmailInputWithCheckButton from './components/EmailInputWithCheckButton';
-import { useDispatch } from 'react-redux';
-import { checkEmailDup, registerUser } from '../../redux/slices/userSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { checkEmailDup, clearEmailDupSuccess, clearRegisterUserSuccess, registerUser } from '../../redux/slices/userSlice';
 
 const SignupScreen = ({navigation}) => {
   const dispatch = useDispatch();
+
+  const emailDupLoading = useSelector((state) => state.user.loading.checkEmailDup);
+  const emailDupSuccess = useSelector((state) => state.user.success.checkEmailDup);
+  const registerLoading = useSelector((state) => state.user.loading.registerUser);
+  const registerSuccess = useSelector((state) => state.user.success.registerUser);  
+  // const error = useSelector((state) => state.user.error.registerUser);
+  const {userDailyMissions, userWeeklyMissions} = useSelector((state)=>state.user);
+
   const [email, setEmail] = useState('');
   const [isEmailChecked, setIsEmailChecked] = useState(false);
   const [password, setPassword] = useState('');
@@ -17,17 +25,32 @@ const SignupScreen = ({navigation}) => {
   const [agreeTerms, setAgreeTerms] = useState(false);
   const [agreePrivacy, setAgreePrivacy] = useState(false);
 
+  useEffect(() => {
+    dispatch(clearEmailDupSuccess());
+  }, []);
+
+  useEffect(() => {
+    dispatch(clearRegisterUserSuccess());
+  }, []);
+
+  useEffect(()=>{
+    if(registerSuccess){
+      navigation.replace("Login")
+    }
+  },[registerSuccess])
+
   const isFormValid =
     password !== '' &&
     passwordConfirm !== '' &&
     nickname !== '' &&
-    isEmailChecked &&
+    emailDupSuccess &&
     agreeTerms &&
     agreePrivacy;
 
   const checkEmailDuplicate = () => {
     console.log(email);
     dispatch(checkEmailDup({email}));
+    // setIsEmailChecked(true);
     // try {
     //     // 예시 API 요청 (axios 또는 fetch 사용 가능)
     //     // const response = await axios.get(`https://your-api.com/api/check-email?email=${email}`);
@@ -67,7 +90,8 @@ const SignupScreen = ({navigation}) => {
                         value={email}
                         onChangeText={setEmail}
                         checkEmailDuplicate={checkEmailDuplicate}
-                        isEmailChecked={isEmailChecked}
+                        // isEmailChecked={isEmailChecked}
+                        isEmailChecked={emailDupSuccess}
                     />
                     <InputWithIcon
                         iconSource={require('../../assets/Signup/pass.png')}

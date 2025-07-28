@@ -1,17 +1,30 @@
-import { Button, Dimensions, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { ActivityIndicator, Button, Dimensions, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { setUser } from '../../redux/slices/userSlice';
+import { fetchUserMainInfo, setUser } from '../../redux/slices/userSlice';
 import { moderateScale } from 'react-native-size-matters';
 import MissionCard from './components/MissionCard';
+import LoadingSpinner from '../../components/LoadingSpinner';
 
 const {width, height} = Dimensions.get('window');
 
 const HomeScreen = ({navigation}) => {
-    // const dispatch = useDispatch();
-    // const {user} = useSelector((state)=>state.user)
+  const dispatch = useDispatch();
 
-    const [selectedTab, setSelectedTab] = useState('weekly'); // 'weekly' or 'daily'
+  const loading = useSelector((state) => state.user.loading.fetchUserMainInfo);
+  // const success = useSelector((state) => state.user.success.fetchUserMainInfo);
+  const error = useSelector((state) => state.user.error.fetchUserMainInfo);
+  const {userInfo, userDailyMissions, userWeeklyMissions} = useSelector((state)=>state.user)
+
+  const [selectedTab, setSelectedTab] = useState('weekly'); // 'weekly' or 'daily'
+
+  useEffect(()=>{
+    dispatch(fetchUserMainInfo());
+  },[])
+
+  // useEffect(()=>{
+  //   console.log("daily",userDailyMissions,"weekly",userWeeklyMissions)
+  // },[userDailyMissions,userWeeklyMissions])
 
   return (
     <View style={styles.container}>
@@ -22,7 +35,13 @@ const HomeScreen = ({navigation}) => {
         }}
         resizeMode="contain"
       />
-      <Text style={styles.welcome}>천안요정님, 환영합니다.</Text>
+      {loading?
+        <><ActivityIndicator size="large" color="gray"/></>
+        // <><LoadingSpinner/></>
+        :
+        <Text style={styles.welcome}>{userInfo?.nickname}님, 환영합니다.</Text>
+      }
+      
 
       <View style={styles.banner}>
         <Image
@@ -50,7 +69,14 @@ const HomeScreen = ({navigation}) => {
           />
         </View>
 
-        <Text style={styles.pointValue}>2,430P</Text>
+        {loading?
+          <><ActivityIndicator size="large" color="gray"/></>
+          // <><LoadingSpinner/></>
+          :
+          <Text style={styles.pointValue}>{userInfo?.point} P</Text>
+        }
+
+
 
         <View style={styles.pointButtons}>
           <TouchableOpacity style={[styles.pointBtn,styles.pointBtnFirst]}><Text style={styles.pointBtnText}>포인트 사용하기</Text></TouchableOpacity>
@@ -76,7 +102,50 @@ const HomeScreen = ({navigation}) => {
           </TouchableOpacity>
         </View>
 
-        {selectedTab === 'weekly' ? (
+        {/* {allMissions?.map((mission, index) => (
+          <ExpandableMissionCard
+            key={index}
+            mission={mission.mission}
+            missionStatus={mission.userMissionStatus}
+            isExpanded={expandedIndex === index}
+            onToggle={() => toggleExpand(index)}
+            openCertificationModal={openCertificationModal}
+          />
+        ))} */}
+        
+        
+        {loading?
+          <><ActivityIndicator size="large" color="gray"/></>
+        :
+          selectedTab === 'weekly' ? 
+            userWeeklyMissions.length===0?
+              <MissionCard/>            
+            :
+              userWeeklyMissions?.map((mission, index) => (
+                <MissionCard
+                  key={index}
+                  mission={mission.mission}
+                  missionStatus={mission.userMissionStatus}
+                />
+              ))
+          : 
+            userWeeklyMissions.length===0?
+              <>
+                <MissionCard/>  
+                <MissionCard/>
+                <MissionCard/>    
+              </>      
+            :
+              userDailyMissions?.map((mission, index) => (
+                <MissionCard
+                  key={index}
+                  mission={mission.mission}
+                  missionStatus={mission.userMissionStatus}
+                />
+              ))
+        }     
+
+        {/* {selectedTab === 'weekly' ? (
           <MissionCard/>
         ) : (
           <>
@@ -84,13 +153,10 @@ const HomeScreen = ({navigation}) => {
             <MissionCard/>
             <MissionCard/>          
           </>
-
-        )}
+        )} */}
         
       </View>
 
-      {/* <Text>{user?user:"none"}</Text> */}
-      {/* <Button title="create user" onPress={()=> dispatch(setUser("hi im a user,probs"))}/> */}
     </View>
   )
 }

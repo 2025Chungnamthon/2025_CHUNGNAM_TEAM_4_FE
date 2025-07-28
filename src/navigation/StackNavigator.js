@@ -16,7 +16,7 @@ const StackNavigator = () => {
     <Stack.Navigator initialRouteName="Login" screenOptions={{ headerShown: false }}>
       <Stack.Screen name="Login" component={LoginScreen}/>
       <Stack.Screen name="Signup" component={SignupScreen}/> 
-      <Stack.Screen name="AdminStack" component={AdminStack} />              
+      <Stack.Screen name="AdminStack" component={AdminStack} />
       <Stack.Screen name="Main" component={TabNavigator}/>
     </Stack.Navigator>
   )

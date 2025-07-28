@@ -7,7 +7,7 @@ const InputWithIcon = ({ iconSource, placeholder, value, onChangeText, secureTex
   const isActive = isFocused || value.length > 0;
 
   return (
-    <View style={[styles.inputContainer, { borderColor: isFocused ? '#0DA566' : '#ccc' }]}>
+    <View style={[styles.inputContainer, { borderColor: isFocused ? '#0DA566' : '#ccc', borderWidth: isFocused?1.5:1 }]}>
       <Image
         source={iconSource}
         style={[

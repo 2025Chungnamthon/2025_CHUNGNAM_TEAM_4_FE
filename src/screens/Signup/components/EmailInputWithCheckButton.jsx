@@ -1,12 +1,14 @@
-import { View, TextInput, Image, TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { View, TextInput, Image, TouchableOpacity, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import React, { useState } from 'react'
+import { useSelector } from 'react-redux';
 
 const EmailInputWithCheckButton = ({iconSource, value, onChangeText, checkEmailDuplicate, isEmailChecked}) => {
+  const emailDupLoading = useSelector((state)=>state.user.loading.checkEmailDup)
   const [isFocused, setIsFocused] = useState(false);
   const isActive = isFocused || value.length > 0;    
 
   return (
-    <View style={[styles.inputContainer, { borderColor: isFocused ? '#0DA566' : '#ccc' }]}>
+    <View style={[styles.inputContainer, { borderColor: isFocused ? '#0DA566' : '#ccc', borderWidth: isFocused?1.5:1 }]}>
       <Image
         source={iconSource}
         style={[
@@ -29,7 +31,7 @@ const EmailInputWithCheckButton = ({iconSource, value, onChangeText, checkEmailD
             style={styles.emailCheckButton}
             disabled={true}
         >
-            <Text style={styles.emailCheckButtonText}>확인완료</Text>
+          <Text style={styles.emailCheckButtonText}>확인완료</Text>
         </TouchableOpacity>
         ) : (
         <TouchableOpacity
@@ -37,7 +39,11 @@ const EmailInputWithCheckButton = ({iconSource, value, onChangeText, checkEmailD
             // style={styles.emailCheckButton}
             onPress={checkEmailDuplicate}
         >
+          {emailDupLoading?
+            <ActivityIndicator style="large"/>
+          :
             <Text style={styles.emailCheckButtonDisabledText}>중복확인</Text>
+          }
         </TouchableOpacity>
         )}      
     </View>

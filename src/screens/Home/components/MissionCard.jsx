@@ -1,17 +1,36 @@
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React from 'react'
 import { moderateScale } from 'react-native-size-matters'
+import { getKoreanStatus } from '../../../utils/statusMapper'
 
-const MissionCard = () => {
-  return (
-    <View style={styles.missionContent}>
-        <View>
-            <Text style={styles.missionTitle}>진행중인 미션 없음</Text>
-            <Text style={styles.missionPoints}>지급 포인트: -</Text>
-        </View>
-        <TouchableOpacity style={styles.btnSmall}><Text style={styles.btnText}>대기중</Text></TouchableOpacity>
-    </View>
-  )
+const MissionCard = ({mission,missionStatus}) => {
+  const truncateText = (text, maxLength = 15) => {
+    return text.length > maxLength ? text.slice(0, maxLength) + '...' : text;
+  };
+
+
+  if(!mission){
+    return (
+      <View style={styles.missionContent}>
+          <View>
+              <Text style={styles.missionTitle}>진행중인 미션 없음</Text>
+              <Text style={styles.missionPoints}>지급 포인트: -</Text>
+          </View>
+          <TouchableOpacity style={styles.btnSmall}><Text style={styles.btnText}>대기중</Text></TouchableOpacity>
+      </View>
+    )
+  } else if(mission){
+    return(
+      <View style={styles.missionContent}>
+          <View>
+              <Text style={styles.missionTitle}>{truncateText(mission.title)}</Text>
+              <Text style={styles.missionPoints}>지급 포인트: {mission.rewardPoints}P</Text>
+          </View>
+          <TouchableOpacity style={styles.btnSmall}><Text style={styles.btnText}>{getKoreanStatus(missionStatus)}</Text></TouchableOpacity>
+      </View>      
+    )
+  }
+
 }
 
 export default MissionCard

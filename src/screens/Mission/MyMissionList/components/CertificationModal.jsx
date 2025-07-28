@@ -18,16 +18,56 @@ import { getSmallCategoryIcon } from '../../../../utils/categoryIconMapper';
 // import * as ImagePicker from 'expo-image-picker';
 // import ImagePickerBoxMultiple from './ImagePickerBoxMultiple';
 import PhotoUploader from './PhotoUploader';
+import { submitMission } from '../../../../redux/slices/userMissionSlice';
+import * as mime from 'react-native-mime-types';
+import { useDispatch } from 'react-redux';
 
 const {width, height} = Dimensions.get('window');
 
-const CertificationModal = ({ visible, mission, onClose, imageUri, onImagePick }) => {
+const CertificationModal = ({ visible, mission, onClose }) => {
+  const dispatch = useDispatch();
     const [selectedImages, setSelectedImages] = useState([]); // 배열로 변경
     const [certText, setCertText] = useState('');
 
+    // const handleSubmit = () => {
+    //     dispatch(submitMission({userMissionId,selectedImages,certText}));
+    // }
+
     const handleSubmit = () => {
-        // dispatch({selectedImages,certText});
-    }
+      if (!certText.trim()) {
+        Alert.alert('인증 설명을 입력해주세요.');
+        return;
+      }
+
+      if (selectedImages.length === 0) {
+        Alert.alert('최소 한 장 이상의 사진을 첨부해주세요.');
+        return;
+      }
+
+      const imageFiles = selectedImages.map((uri, index) => {
+        const filename = uri.split('/').pop();
+        const ext = filename?.split('.').pop()?.toLowerCase();
+        const mimeType = mime.lookup(ext) || 'image/jpeg';
+
+        return {
+          uri,
+          name: filename || `image${index}.jpg`,
+          type: mimeType,
+        };
+      });
+
+      console.log("images files before api", imageFiles)
+
+      dispatch(
+        submitMission({
+          userMissionId: mission?.userMissionId || mission?.id, // 상황에 따라 id 확인
+          description: certText,
+          images: imageFiles,
+        })
+      );
+    };
+
+    console.log("selected images",selectedImages)
 
   return (
     <Modal

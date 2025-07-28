@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 
-const MissionCard = ({ mission, isExpanded, onToggle }) => {
+const MissionCard = ({ mission, missionStatus, isExpanded, onToggle }) => {
   const { type, title, point, icon, description, method } = mission;
 
   const isWeekly = type === 'weekly';

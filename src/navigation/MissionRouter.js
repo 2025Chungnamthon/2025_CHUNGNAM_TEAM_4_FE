@@ -8,18 +8,22 @@ const MissionRouter = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
 
-  // const [hasDailyMission, setHasDailyMission] = useState(false);
-  // const [hasWeeklyMission, setHasWeeklyMission] = useState(false);
+  // const { loading, success, error, dailyMissionSelected, weeklyMissionSelected } = useSelector(
+  //   (state) => ({
+  //     loading: state.userMission.loading.fetchUserMissions,
+  //     success: state.userMission.success.fetchUserMissions,
+  //     error: state.userMission.error.fetchUserMissions,
+  //     dailyMissionSelected: state.userMission.dailyMissionSelected,
+  //     weeklyMissionSelected: state.userMission.weeklyMissionSelected,
+  //   })
+  // );
 
-  const { loading, success, error, dailyMissionSelected, weeklyMissionSelected } = useSelector(
-    (state) => ({
-      loading: state.userMission.loading.fetchUserMissions,
-      success: state.userMission.success.fetchUserMissions,
-      error: state.userMission.error.fetchUserMissions,
-      dailyMissionSelected: state.userMission.dailyMissionSelected,
-      weeklyMissionSelected: state.userMission.weeklyMissionSelected,
-    })
-  );
+  const loading = useSelector((state) => state.userMission.loading.fetchUserMissions);
+  const success = useSelector((state) => state.userMission.success.fetchUserMissions);
+  const error = useSelector((state) => state.userMission.error.fetchUserMissions);
+  const {dailyMissionSelected, weeklyMissionSelected} = useSelector((state)=>state.userMission)
+  // const dailyMissionSelected = useSelector((state) => state.userMission.dailyMissionSelected);
+  // const weeklyMissionSelected = useSelector((state) => state.userMission.weeklyMissionSelected);  
 
   // 예: Redux 상태로부터 유저 미션 존재 여부 확인
 //   const hasDailyMission = useSelector(state => state.missions.hasDaily);
@@ -28,6 +32,7 @@ const MissionRouter = () => {
   useEffect(()=>{
     // console.log("fetch user missions");
     dispatch(fetchUserMissions());
+    console.log("after fetchUserMissions()")
   },[])
 
   // useEffect(()=>{
@@ -35,7 +40,7 @@ const MissionRouter = () => {
   // },[dailyMissionSelected,weeklyMissionSelected])
 
   useEffect(() => {
-    if(success){
+    if(weeklyMissionSelected!==null&&dailyMissionSelected!==null){
       console.log("weekly: ",weeklyMissionSelected,"daily: ",dailyMissionSelected);
       if (!weeklyMissionSelected && !dailyMissionSelected) {
         navigation.replace('WeeklyMissionSelectScreen');
@@ -45,7 +50,7 @@ const MissionRouter = () => {
         navigation.replace('MyMissionListScreen');
       }
     }
-  }, [success]);
+  }, [weeklyMissionSelected,dailyMissionSelected]);
 
   // 로딩 처리
   if (loading) {

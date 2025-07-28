@@ -75,7 +75,7 @@ export const deleteMission = createAsyncThunk(
     try {
       console.log("hello");
       console.log(missionId)      
-      const response = await api.delete(`/api/admin/missions/${missionId}/delete`);
+      const response = await api.patch(`/api/admin/missions/${missionId}/delete`);
       dispatch(fetchMissions({status:'CREATE'}));
       return response.data; // 삭제된 미션 반환
     } catch (error) {
@@ -103,43 +103,137 @@ export const updateMission = createAsyncThunk(
   }
 );
 
-const missionSlice = createSlice({
-    name:"mission",
-    initialState:{
-        missionList: [],
-        loading: false,
-        error: null,
-    },
-    reducers:{
 
+
+const missionSlice = createSlice({
+  name: "mission",
+  initialState: {
+    missionList: [],
+    loading: {
+      createMissionList: false,
+      fetchMissions: false,
+      createMission: false,
+      activateMission: false,
+      deleteMission: false,
+      updateMission: false,
     },
-    extraReducers: (builder)=>{
-        builder
-            .addCase(createMissionList.pending, (state) => {
-                state.loading = true;
-                state.error = null;
-            })
-            .addCase(createMissionList.fulfilled, (state, action) => {
-                state.loading = false;
-                state.missionList = action.payload;
-            })
-            .addCase(createMissionList.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.payload;
-            })
-            .addCase(fetchMissions.pending, (state) => {
-                state.loading = true;
-                state.error = null;
-            })
-            .addCase(fetchMissions.fulfilled, (state, action) => {
-                state.loading = false;
-                state.missionList = action.payload;
-            })
-            .addCase(fetchMissions.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.payload;
-            })
+    success: {
+      createMissionList: false,
+      fetchMissions: false,
+      createMission: false,
+      activateMission: false,
+      deleteMission: false,
+      updateMission: false,
     },
-})
+    error: {
+      createMissionList: null,
+      fetchMissions: null,
+      createMission: null,
+      activateMission: null,
+      deleteMission: null,
+      updateMission: null,
+    },
+  },
+  reducers: {},
+  extraReducers: (builder) => {
+    builder
+
+      .addCase(createMissionList.pending, (state) => {
+        state.loading.createMissionList = true;
+        state.success.createMissionList = false;
+        state.error.createMissionList = null;
+      })
+      .addCase(createMissionList.fulfilled, (state, action) => {
+        state.loading.createMissionList = false;
+        state.success.createMissionList = true;
+        state.missionList = action.payload;
+      })
+      .addCase(createMissionList.rejected, (state, action) => {
+        state.loading.createMissionList = false;
+        state.error.createMissionList = action.payload;
+      })
+
+      // ✅ fetchMissions
+      .addCase(fetchMissions.pending, (state) => {
+        state.loading.fetchMissions = true;
+        state.success.fetchMissions = false;
+        state.error.fetchMissions = null;
+      })
+      .addCase(fetchMissions.fulfilled, (state, action) => {
+        state.loading.fetchMissions = false;
+        state.success.fetchMissions = true;
+        state.missionList = action.payload;
+      })
+      .addCase(fetchMissions.rejected, (state, action) => {
+        state.loading.fetchMissions = false;
+        state.error.fetchMissions = action.payload;
+      })
+
+      // ✅ createMission
+      .addCase(createMission.pending, (state) => {
+        state.loading.createMission = true;
+        state.success.createMission = false;
+        state.error.createMission = null;
+      })
+      .addCase(createMission.fulfilled, (state, action) => {
+        state.loading.createMission = false;
+        state.success.createMission = true;
+        state.missionList.push(action.payload); // 예시로 추가
+      })
+      .addCase(createMission.rejected, (state, action) => {
+        state.loading.createMission = false;
+        state.error.createMission = action.payload;
+      })
+
+      // ✅ activateMission
+      .addCase(activateMission.pending, (state) => {
+        state.loading.activateMission = true;
+        state.success.activateMission = false;
+        state.error.activateMission = null;
+      })
+      .addCase(activateMission.fulfilled, (state) => {
+        state.loading.activateMission = false;
+        state.success.activateMission = true;
+      })
+      .addCase(activateMission.rejected, (state, action) => {
+        state.loading.activateMission = false;
+        state.error.activateMission = action.payload;
+      })
+
+      // ✅ deleteMission
+      .addCase(deleteMission.pending, (state) => {
+        state.loading.deleteMission = true;
+        state.success.deleteMission = false;
+        state.error.deleteMission = null;
+      })
+      .addCase(deleteMission.fulfilled, (state) => {
+        state.loading.deleteMission = false;
+        state.success.deleteMission = true;
+      })
+      .addCase(deleteMission.rejected, (state, action) => {
+        state.loading.deleteMission = false;
+        state.error.deleteMission = action.payload;
+      })
+
+      // ✅ updateMission
+      .addCase(updateMission.pending, (state) => {
+        state.loading.updateMission = true;
+        state.success.updateMission = false;
+        state.error.updateMission = null;
+      })
+      .addCase(updateMission.fulfilled, (state, action) => {
+        state.loading.updateMission = false;
+        state.success.updateMission = true;
+        const index = state.missionList.findIndex(m => m.id === action.payload.id);
+        if (index !== -1) {
+          state.missionList[index] = action.payload;
+        }
+      })
+      .addCase(updateMission.rejected, (state, action) => {
+        state.loading.updateMission = false;
+        state.error.updateMission = action.payload;
+      });
+  },
+});
 
 export default missionSlice.reducer;

@@ -3,19 +3,28 @@ import React from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, FlatList, Dimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { moderateScale } from 'react-native-size-matters';
+import { useSelector } from 'react-redux';
 
 const {width, height} = Dimensions.get('window');
 
 const MyPageScreen = () => {
   const navigation = useNavigation();
+  const {userInfo} = useSelector((state)=>state.user);
 
-  const menuItems = [
+  const adminMenuItems = [
     { label: '관리자 화면', func: ()=>navigation.navigate('AdminStack')},    
     { label: '내정보 확인', func: ()=>navigation.navigate('UserInfoScreen')},
     { label: '포인트 사용 내역', func: ()=>navigation.navigate('PointHistoryScreen')},
     { label: '환경설정', func: ()=>navigation.navigate('SettingsScreen')},
     { label: '로그아웃', func: handleLogout, route: 'Logout' },
   ];
+
+  const userMenuItems =[
+    { label: '내정보 확인', func: ()=>navigation.navigate('UserInfoScreen')},
+    { label: '포인트 사용 내역', func: ()=>navigation.navigate('PointHistoryScreen')},
+    { label: '환경설정', func: ()=>navigation.navigate('SettingsScreen')},
+    { label: '로그아웃', func: handleLogout, route: 'Logout' },    
+  ]
 
   const handleLogout=()=>{
 
@@ -36,8 +45,9 @@ const MyPageScreen = () => {
           style={styles.profileImage}
         />
         <View style={styles.profileTextContainer}>
-          <Text style={styles.username}>ADMIN</Text>
-          <Text style={styles.bio}>소개글을 작성해주세요.</Text>
+          <Text style={styles.username}>{userInfo?.nickname}</Text>
+          {/* <Text style={styles.bio}>소개글을 작성해주세요.</Text> */}
+          <Text style={styles.bio}>{userInfo.role==="ADMIN"?"관리자":"사용자"}</Text>
         </View>
         <TouchableOpacity onPress={() => navigation.navigate('EditProfile')}>
           <Text style={styles.editProfileText}>프로필수정 &gt;</Text>
@@ -45,12 +55,22 @@ const MyPageScreen = () => {
       </View>
 
       {/* 메뉴 리스트 */}
-      <FlatList
-        data={menuItems}
-        renderItem={renderMenuItem}
-        keyExtractor={(item) => item.label}
-        contentContainerStyle={styles.menuList}
-      />
+      {userInfo?.role==='ADMIN'?
+        <FlatList
+          data={adminMenuItems}
+          renderItem={renderMenuItem}
+          keyExtractor={(item) => item.label}
+          contentContainerStyle={styles.menuList}
+        />        
+      :
+        <FlatList
+          data={userMenuItems}
+          renderItem={renderMenuItem}
+          keyExtractor={(item) => item.label}
+          contentContainerStyle={styles.menuList}
+        />
+      }    
+
     </View>
   );
 };

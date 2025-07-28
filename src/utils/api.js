@@ -15,7 +15,7 @@ const api = axios.create({
 // // 토큰 자동 포함 (선택)
 api.interceptors.request.use(async(config) => {
   // const token = await getAccessToken(); // 필요시 AsyncStorage에서 불러오기
-  const token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyIiwicm9sZSI6IkFETUlOIiwidHlwZSI6IkFDQ0VTUyIsImlhdCI6MTc1MzU2NjYxNywiZXhwIjoxNzUzNTcwMjE3fQ.dtob6U0vGlaeYzhDiFoB4pUbEkOL-TS-7dLWyNWJojhByTz5eGvJjzq_h4ZqK7TmMyCiroH040C_tq4fc7yvFQ"
+  const token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyIiwicm9sZSI6IkFETUlOIiwidHlwZSI6IkFDQ0VTUyIsImlhdCI6MTc1MzY3NTY3NywiZXhwIjoxNzUzNjc5Mjc3fQ.VAFfBMfXTzW2g4UxI5tn6yXJ7REWG8drvs3t3Th8l76V_5_T3lVOsl7vVjn8T5t6J-SW18go3KwVd1J0OwGefg"
   if (token) {
     // console.log("header token:  ",token);
     config.headers.Authorization = `Bearer ${token}`;

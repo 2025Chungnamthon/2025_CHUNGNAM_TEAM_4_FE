@@ -2,17 +2,19 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import api from '../../utils/api';
 
 // 1. 사용자 메인 정보 조회
-export const fetchUserMainInfo = createAsyncThunk(
-  'userMissions/fetchUserMainInfo',
-  async (_, { rejectWithValue }) => {
-    try {
-      const response = await api.get('/api/users/main');
-      return response.data;
-    } catch (error) {
-      return rejectWithValue(error.response.data.message);
-    }
-  }
-);
+// export const fetchUserMainInfo = createAsyncThunk(
+//   'userMissions/fetchUserMainInfo',
+//   async (_, { rejectWithValue }) => {
+//     try {
+//       const response = await api.get('/api/users/main');
+//       console.log("user info",response.data)
+//       return response.data;
+//     } catch (error) {
+//       console.log(error.response.data.message);
+//       return rejectWithValue(error.response.data.message);
+//     }
+//   }
+// );
 
 // 2. 미션 목록 조회
 export const fetchUserMissions = createAsyncThunk(
@@ -68,10 +70,14 @@ export const submitMission = createAsyncThunk(
   async ({ userMissionId, description, images }, { rejectWithValue }) => {
     try {
       const formData = new FormData();
-      formData.append(
-        'request',
-        JSON.stringify({ userMissionId, description })
-      );
+
+      // ✅ 각각 별도로 추가 (RequestParam)
+      formData.append('userMissionId', String(userMissionId));
+      formData.append('description', description);
+
+      console.log("images",images)
+
+      // ✅ 이미지들 추가 (RequestPart)
       images.forEach((img, index) => {
         formData.append('images', {
           uri: img.uri,
@@ -80,21 +86,32 @@ export const submitMission = createAsyncThunk(
         });
       });
 
+      for (let pair of formData.entries()) {
+        console.log(pair[0] + ':', pair[1]);
+      }
+
       const response = await api.post('/api/missions/submit', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
+        headers: {
+          'Content-Type': 'multipart/form-data', // boundary는 Axios가 자동 처리
+        },
       });
+
+      console.log("response",response.data)
+
       return response.data;
     } catch (error) {
+      console.log("error: ", error);
       return rejectWithValue(error.response?.data?.message || '제출 실패');
     }
   }
 );
 
+
 // 🔧 Slice
 const userMissionSlice = createSlice({
   name: 'userMission',
   initialState: {
-    userInfo: null,
+    // userInfo: null,
     dailyMissionSelected:null,
     weeklyMissionSelected:null,
     dailyMissions: [],
@@ -108,7 +125,7 @@ const userMissionSlice = createSlice({
     
     
     loading: {
-        fetchUserMainInfo: false,
+        // fetchUserMainInfo: false,
         fetchUserMissions: false,
         fetchMissionDetail: false,
         selectMissions: false,
@@ -116,7 +133,7 @@ const userMissionSlice = createSlice({
     },
 
     success: {
-        fetchUserMainInfo: false,
+        // fetchUserMainInfo: false,
         fetchUserMissions: false,
         fetchMissionDetail: false,
         selectMissions: false,
@@ -124,7 +141,7 @@ const userMissionSlice = createSlice({
     }, 
 
     error: {
-        fetchUserMainInfo: null,
+        // fetchUserMainInfo: null,
         fetchUserMissions: null,
         fetchMissionDetail: null,
         selectMissions: null,
@@ -138,20 +155,20 @@ const userMissionSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchUserMainInfo.pending, (state) => {
-        state.loading.fetchUserMainInfo = true;
-      })
-      .addCase(fetchUserMainInfo.fulfilled, (state, action) => {
-        state.loading.fetchUserMainInfo = false;
-        const { userInfo, dailyMissions, weeklyMissions } = action.payload;
-        state.userInfo = userInfo;
-        state.userDailyMissions = dailyMissions || [];
-        state.userWeeklyMissions = weeklyMissions || [];
-      })
-      .addCase(fetchUserMainInfo.rejected, (state, action) => {
-        state.loading.fetchUserMainInfo = false;
-        state.error.fetchUserMainInfo = action.payload;
-      })
+      // .addCase(fetchUserMainInfo.pending, (state) => {
+      //   state.loading.fetchUserMainInfo = true;
+      // })
+      // .addCase(fetchUserMainInfo.fulfilled, (state, action) => {
+      //   state.loading.fetchUserMainInfo = false;
+      //   const { userInfo, dailyMissions, weeklyMissions } = action.payload;
+      //   state.userInfo = userInfo;
+      //   state.userDailyMissions = dailyMissions || [];
+      //   state.userWeeklyMissions = weeklyMissions || [];
+      // })
+      // .addCase(fetchUserMainInfo.rejected, (state, action) => {
+      //   state.loading.fetchUserMainInfo = false;
+      //   state.error.fetchUserMainInfo = action.payload;
+      // })
       .addCase(fetchUserMissions.pending,(state)=>{
         state.loading.fetchUserMissions=true;
       })

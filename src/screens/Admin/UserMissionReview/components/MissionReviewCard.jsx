@@ -1,12 +1,12 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 const statusMap = {
-  PENDING: '대기',
-  REJECTED: '반려',
-  COMPLETED: '승인',
-  IN_PROGRESS: '진행중',
+  '요청': '대기',
+  '거절': '반려',
+  '승인': '승인',
+  '진행중': '진행중',
 };
 
 const getStatusColor = (status) => {
@@ -19,26 +19,34 @@ const getStatusColor = (status) => {
   }
 };
 
+const formatDate = (dateString) => {
+  return dateString.substring(0, 10).replace(/-/g, '.');
+};
 
-const UserMissionReviewCard = ({ mission, onPress }) => {
-  const { title, user, status, date, type, icon } = mission;
+const UserMissionReviewCard = ({ mission,missionInfo, onPress, statusMap }) => {
+  const { user_nickname, status, created_at, icon } = mission;
+  // const {title, type, category} = missionInfo;
+
+  useEffect(()=>{
+    console.log("mission info",mission);
+  },[])
 
   return (
     <TouchableOpacity style={styles.card} onPress={onPress}>
       <View style={styles.row}>
         <Ionicons name={icon || 'document-text-outline'} size={20} style={styles.icon} />
         <Text style={styles.title}>
-          {type === 'DAILY' ? '(일일)' : '(주간)'} {title}
+          {missionInfo?.type === 'DAILY' ? '(일일)' : '(주간)'} {missionInfo?.title}
         </Text>
       </View>
-      <Text style={styles.user}>사용자: {user}</Text>
+      <Text style={styles._nickname}>사용자: {user_nickname}</Text>
       <Text style={styles.status}>
         상태: <Text style={{ color: getStatusColor(mission.status) }}>
-            {statusMap[mission.status] || '알 수 없음'}
+            {statusMap[status] || '알 수 없음'}
         </Text>
       </Text>
       {/* <Text style={styles.status}>상태: <Text style={{ color: '#189D66' }}>{status}</Text></Text> */}
-      <Text style={styles.date}>{date}</Text>
+      <Text style={styles.date}>{formatDate(created_at)}</Text>
     </TouchableOpacity>
   );
 };

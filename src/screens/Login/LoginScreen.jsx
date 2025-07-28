@@ -15,7 +15,7 @@ const LoginScreen = ({navigation}) => {
   const [password, setPassword] = useState('');  
   const [isIdFocused, setIsIdFocused] = useState(false);
   const [isPwFocused, setIsPwFocused] = useState(false);
-  const {loginLoading} = useSelector((state)=>state.user)
+  const loginLoading = useSelector((state)=>state.user.loading.loginUser)
 
   // const handleLogin = async() => {
   //   try {
@@ -36,6 +36,16 @@ const LoginScreen = ({navigation}) => {
       Alert.alert("로그인 실패", err);
     }    
   }
+
+  // const handleLogin = async() => {
+  //   try {
+  //     const res = await dispatch(loginUser({ email:"user9@gmail.com", password:"user123@" })).unwrap();
+  //     console.log("로그인 성공", res);
+  //     navigation.replace("Main");
+  //   } catch (err) {
+  //     Alert.alert("로그인 실패", err);
+  //   }    
+  // }  
 
   const handleSignupButton = () => {
     navigation.navigate('Signup');

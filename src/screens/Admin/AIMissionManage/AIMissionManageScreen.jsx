@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Dimensions,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 import {Ionicons} from "@expo/vector-icons";
 import MissionCard from "./components/MissionCard";
@@ -19,53 +20,11 @@ import EditMissionModal from "./components/EditMissionModal";
 
 const {width,height} = Dimensions.get('window');
 
-// 예시 데이터
-// const missions = [
-//   {
-//     id: '1',
-//     title: '텀블러 사용하기',
-//     description: '제로웨이스트 매장 방문 후 사진 인증하기\n본인을 인증할 수 있는 사진 2장 첨부 필수',
-//     type: 'DAILY',
-//     category: "일상 속 습관",    
-//     rewardPoints: 30,
-//   },
-//   {
-//     id: '2',
-//     title: '꽃과 나무에 물 주기',
-//     rewardPoints: 30,
-//     type: '일일 미션',
-//     description: '플라스틱/캔/종이를 분리배출하는 사진 2장 첨부',
-//     category: "친환경 이동",
-//   },
-//   {
-//     id: '3',
-//     title: '친환경 캠페인 알리기',
-//     rewardPoints: 40,
-//     type: '일일 미션',
-//     description: '용기를 이용한 포장 모습 인증 사진 2장 첨부',
-//     category: "친환경 소비",
-//   },
-//   {
-//     id: '4',
-//     title: '플로깅 실천하기',
-//     rewardPoints: 60,
-//     type: '일일 미션',
-//     description: '용기를 이용한 포장 모습 인증 사진 2장 첨부',
-//     category: "재활용/자원순환",
-//   },
-//   {
-//     id: '5',
-//     title: '장바구니 지참하기',
-//     rewardPoints: 30,
-//     icon: 'cube-outline',
-//     type: '일일 미션',
-//     description: '용기를 이용한 포장 모습 인증 사진 2장 첨부',
-//     category: "에너지 절약",
-//   },
-// ];
-
 const AIMissionManageScreen = () => {
   const dispatch = useDispatch();
+  const missionLoading = useSelector((state) => state.mission.loading.fetchMissions);
+  const missionError = useSelector((state) => state.mission.error.fetchMissions);
+
   const [modalVisible, setModalVisible] = useState(false);
   const [missionType, setMissionType] = useState(null);
   const [missionGenre, setMissionGenre] = useState(null);
@@ -133,9 +92,14 @@ const AIMissionManageScreen = () => {
         </View>
 
         {/* 미션 카드 리스트 */}
-        {missionList?.map((mission) => (
-            <MissionCard key={mission.id} mission={mission} handleEditClick={handleEditClick}/>
-        ))}      
+        {missionLoading?
+            <View style={styles.spinnerBox}>
+              <ActivityIndicator size={80} color="gray"/>
+            </View>
+        :
+          missionList?.map((mission) => (
+              <MissionCard key={mission.id} mission={mission} handleEditClick={handleEditClick}/>
+          ))}      
 
         {/* {missions.map((mission) => (
             <MissionCard key={mission.id} mission={mission} handleEditClick={handleEditClick} />
@@ -248,4 +212,9 @@ const styles = StyleSheet.create({
   },
   approveAllText: {color: "white", textAlign: "center", fontWeight: "bold"},
   rejectAllText: {color: "white", textAlign: "center", fontWeight: "bold"},
+  spinnerBox:{
+    height:height*0.55,
+    justifyContent:"center",
+    // borderWidth:1,
+  },
 });

@@ -6,7 +6,7 @@ import { Dimensions } from 'react-native';
 import COLORS from '../../../constants/colors';
 import ExpandableMissionCard from './components/ExpandableMissionCard';
 import CertificationModal from './components/CertificationModal';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { fetchUserMissions } from '../../../redux/slices/userMissionSlice';
 // import { categoryColors } from '../../constants/colors';
 
@@ -63,7 +63,30 @@ const MyMissionListScreen = () => {
   const dispatch = useDispatch();
   const [expandedIndex, setExpandedIndex] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
-  const [selectedMission, setSelectedMission] = useState(null); // 선택된 미션 정보  
+  const [selectedMission, setSelectedMission] = useState(null); // 선택된 미션 정보
+
+  const loading = useSelector((state) => state.userMission.loading.fetchUserMissions);
+  const success = useSelector((state) => state.userMission.success.fetchUserMissions);
+  const error = useSelector((state) => state.userMission.error.fetchUserMissions);
+  const {userDailyMissions, userWeeklyMissions} = useSelector((state)=>state.userMission)
+
+  const allMissions = [
+    ...(userWeeklyMissions || []),
+    ...(userDailyMissions || []),
+  ];
+
+  useEffect(()=>{
+    console.log("all missions",allMissions)
+  },[allMissions])
+  // const { loading, success, error, dailyMissionSelected, weeklyMissionSelected } = useSelector(
+  //   (state) => ({
+  //     loading: state.userMission.loading.fetchUserMissions,
+  //     success: state.userMission.success.fetchUserMissions,
+  //     error: state.userMission.error.fetchUserMissions,
+  //     dailyMissionSelected: state.userMission.dailyMissionSelected,
+  //     weeklyMissionSelected: state.userMission.weeklyMissionSelected,
+  //   })
+  // );
   
   useEffect(()=>{
     dispatch(fetchUserMissions());
@@ -102,15 +125,17 @@ const MyMissionListScreen = () => {
       </View>
 
       <View style={styles.cardList}>
-        {missionData.map((mission, index) => (
-        <ExpandableMissionCard
-          key={index}
-          mission={mission}
-          isExpanded={expandedIndex === index}
-          onToggle={() => toggleExpand(index)}
-          openCertificationModal={openCertificationModal}
-        />
+        {allMissions?.map((mission, index) => (
+          <ExpandableMissionCard
+            key={index}
+            mission={mission.mission}
+            missionStatus={mission.userMissionStatus}
+            isExpanded={expandedIndex === index}
+            onToggle={() => toggleExpand(index)}
+            openCertificationModal={openCertificationModal}
+          />
         ))}
+        
       </View>
 
       <CertificationModal

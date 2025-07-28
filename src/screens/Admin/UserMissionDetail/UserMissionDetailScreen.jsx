@@ -1,35 +1,63 @@
-import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, Modal, Pressable, ActivityIndicator, Dimensions } from 'react-native';
 import COLORS from '../../../constants/colors';
 import { Ionicons } from '@expo/vector-icons';
 import { moderateScale } from 'react-native-size-matters';
+import { approveChallenge, clearSelectedChallenge, fetchChallengeDetail, rejectChallenge } from '../../../redux/slices/challengeSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import LoadingSpinner from '../../../components/LoadingSpinner';
+
+const formatDate = (dateString) => {
+  if (!dateString) return '-'; // 또는 null, 혹은 빈 문자열 ''  
+  return dateString?.substring(0, 10).replace(/-/g, '.');
+};
+
+const {width,height} = Dimensions.get('window');
 
 const UserMissionDetailScreen = ({ route, navigation }) => {
-//   const { missionId } = route.params;
+  const dispatch = useDispatch();
+  const { missionId } = route.params;
+  
+  const challengeLoading = useSelector((state) => state.challenge.loading.fetchChallengeDetail);
+  const challengeError = useSelector((state) => state.challenge.error.fetchChallengeDetail);
+  // const success = useSelector((state) => state.challenge.success.fetchChallengeDetail);
+  const approveLoading = useSelector((state) => state.challenge.loading.approveChallenge);
+  const approveError = useSelector((state) => state.challenge.error.approveChallenge);
+  const rejectLoading = useSelector((state) => state.challenge.loading.rejectChallenge);
+  const rejectError = useSelector((state) => state.challenge.error.rejectChallenge);
+  const {selectedChallenge} = useSelector((state)=>state.challenge)
 
-    const mission = {
-        id: '1',
-        title: '텀블러 사용하기',
-        type: 'WEEKLY',
-        userNickname: '천안요정',
-        status: 'PENDING',
-        category: '일상 속 습관',
-        description: "텀블러를 사용하고 인증사질 1장 올리기기기기기기기.",
-        date: '2025.07.24',
-        photos:[],
+  const [selectedImage, setSelectedImage] = useState(null); // 눌린 이미지 URI
+  const [modalVisible, setModalVisible] = useState(false);  // 모달 on/off  
+
+  useEffect(()=>{
+    if(missionId){
+      console.log("missionId",missionId);
+      dispatch(fetchChallengeDetail(missionId));
     }
 
-  // 예시 데이터
-//   const {
-//     title,
-//     date = '2025.07.24',
-//     type,
-//     category,
-//     userNickname,
-//     description,
-//     userText,
-//     photos, // 배열: ['url1', 'url2', ...]
-//   } = mission;
+    return () => {
+      dispatch(clearSelectedChallenge());
+    };    
+  },[missionId])
+
+  const handleApprove = (missionId) => {
+    console.log("missionId",missionId);
+    dispatch(approveChallenge(missionId));
+  }
+
+  const handleReject = (missionId) => {
+    console.log("missionId",missionId);
+    dispatch(rejectChallenge({challengeId:missionId,reject_reason:"성의가 없음"}));
+  }
+
+  if(challengeLoading){
+    return(
+      <View style={styles.spinnerBox}>
+        <ActivityIndicator size={80} color="gray"/>
+      </View>      
+    )
+  }
 
   return (
     <View style={styles.container}>
@@ -38,48 +66,73 @@ const UserMissionDetailScreen = ({ route, navigation }) => {
         <TouchableOpacity style={styles.goBackButton} onPress={() => navigation.goBack()}>
             <Ionicons name="chevron-back" size={24} />
         </TouchableOpacity>
-        <Text style={styles.title}>{mission?.title}</Text>
+        <Text style={styles.title}>{selectedChallenge?.mission_info.title}</Text>
       </View>
 
         <View style={styles.subHeaderRow}>
-            <Text style={styles.date}>{mission?.date}</Text>
-            <Text style={styles.subInfo}>{mission?.type === 'DAILY' ? '일일미션' : '주간미션'} / {mission?.category}</Text>
+            <Text style={styles.date}>{formatDate(selectedChallenge?.created_at)}</Text>
+            <Text style={styles.subInfo}>{selectedChallenge?.mission_info.type === 'DAILY' ? '일일미션' : '주간미션'} / {selectedChallenge?.mission_info.category}</Text>
         </View>
 
 
         <View style={styles.body}>
             {/* 사용자 정보 */}
-            <Text style={styles.label}>사용자: <Text style={styles.highlight}>{mission?.userNickname}</Text></Text>
+            <Text style={styles.label}>사용자: <Text style={styles.highlight}>{selectedChallenge?.user_nickname}</Text></Text>
 
             {/* 미션 설명 */}
-            <Text style={styles.descLabel}>설명: <Text style={styles.description}>{mission?.description}</Text></Text>
+            <Text style={styles.descLabel}>설명: <Text style={styles.description}>{selectedChallenge?.mission_info.description}</Text></Text>
             
 
             {/* 사진 영역 */}
             <View style={styles.imageRow}>
-                {mission?.photos && mission?.photos.length > 0
-                ? mission?.photos.map((uri, idx) => (
-                    <Image key={idx} source={{ uri }} style={styles.image} resizeMode="cover" />
-                    ))
+                {selectedChallenge?.image_url && selectedChallenge?.image_url.length > 0
+                ? selectedChallenge?.image_url.map((uri, idx) => (
+                    <TouchableOpacity
+                      key={idx}
+                      onPress={() => {
+                        setSelectedImage(uri);
+                        setModalVisible(true);
+                      }}
+                    >                    
+                      <Image key={idx} source={{ uri }} style={styles.image} resizeMode="cover" />
+                    </TouchableOpacity>                    
+                  ))
                 : [0, 1, 2].map((i) => (
                     <View key={i} style={styles.imagePlaceholder} />
                     ))}
             </View>
 
             {/* 사용자 작성 텍스트 */}
-            <Text style={styles.userText}>{mission?.userText}</Text>
+            <Text style={styles.userText}>{selectedChallenge?.submissionText}</Text>
 
             {/* 승인 / 반려 버튼 */}
             <View style={styles.buttonRow}>
-                <TouchableOpacity style={styles.approveButton}>
-                <Text style={styles.buttonText}>승인</Text>
+                <TouchableOpacity onPress={()=>handleApprove(missionId)} style={styles.approveButton}>
+                  {approveLoading?
+                    <ActivityIndicator size={20} color="white"/>
+                  :
+                    <Text style={styles.buttonText}>승인</Text>
+                  }
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.rejectButton}>
-                <Text style={styles.buttonText}>반려</Text>
+                <TouchableOpacity onPress={()=>handleReject(missionId)} style={styles.rejectButton}>
+                  {rejectLoading?
+                    <ActivityIndicator size={20} color="white"/>
+                  :
+                    <Text style={styles.buttonText}>반려</Text>
+                  }                  
                 </TouchableOpacity>
             </View>
         </View>
 
+      <Modal
+        visible={modalVisible}
+        transparent={true}
+        animationType="fade"
+      >
+        <Pressable style={styles.modalOverlay} onPress={() => setModalVisible(false)}>
+          <Image source={{ uri: selectedImage }} style={styles.fullImage} resizeMode="contain" />
+        </Pressable>
+      </Modal>
 
     </View>
   );
@@ -199,4 +252,21 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold',
   },
+  modalOverlay: {
+  flex: 1,
+  backgroundColor: 'rgba(0,0,0,0.9)',
+  justifyContent: 'center',
+  alignItems: 'center',
+},
+fullImage: {
+  width: '90%',
+  height: '90%',
+  borderRadius: 8,
+},
+  spinnerBox:{
+    height:height,
+    justifyContent:"center",
+    // borderWidth:1,
+  },
+
 });
