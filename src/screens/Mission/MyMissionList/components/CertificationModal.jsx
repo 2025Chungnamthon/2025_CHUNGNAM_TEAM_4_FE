@@ -19,7 +19,7 @@ import { getSmallCategoryIcon } from '../../../../utils/categoryIconMapper';
 // import * as ImagePicker from 'expo-image-picker';
 // import ImagePickerBoxMultiple from './ImagePickerBoxMultiple';
 import PhotoUploader from './PhotoUploader';
-import { submitMission } from '../../../../redux/slices/userMissionSlice';
+import { clearSubmitResultSuccess, submitMission } from '../../../../redux/slices/userMissionSlice';
 import * as mime from 'react-native-mime-types';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -41,6 +41,13 @@ const CertificationModal = ({ visible, mission, onClose }) => {
     // const handleSubmit = () => {
     //     dispatch(submitMission({userMissionId,selectedImages,certText}));
     // }
+
+    useEffect(() => {
+      if (success) {
+        onClose(); // 모달 닫기
+        dispatch(clearSubmitResultSuccess()); // 상태 초기화
+      }
+    }, [success]);    
 
     const handleSubmit = () => {
       if (!certText.trim()) {

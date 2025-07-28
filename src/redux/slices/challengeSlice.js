@@ -36,9 +36,10 @@ export const approveChallenge = createAsyncThunk(
   'challenges/approveChallenge',
   async (challengeId, { rejectWithValue }) => {
     try {
-      await api.patch(`/api/admin/challenges/${challengeId}/approve`);
+      console.log("approve start");
+      const response = await api.patch(`/api/admin/challenges/${challengeId}/approve`);
       console.log("response data",response.data)
-      return challengeId;
+      return response.data;
     } catch (error) {
       console.log("error: ",error.response.data.message);
       return rejectWithValue(error.response.data.message);
@@ -51,10 +52,10 @@ export const rejectChallenge = createAsyncThunk(
   'challenges/rejectChallenge',
   async ({challengeId,reject_reason}, { rejectWithValue }) => {
     try {
-        console.log("start")
-      await api.patch(`/api/admin/challenges/${challengeId}/reject`,{reject_reason});
+      console.log("start")
+      const response = await api.patch(`/api/admin/challenges/${challengeId}/reject`,{reject_reason});
       console.log("response data",response.data)
-      return challengeId;
+      return response.data;
     } catch (error) {
       console.log("error: ",error);
       return rejectWithValue(error.response.data.message);
@@ -90,6 +91,12 @@ const challengeSlice = createSlice({
   reducers: {
     clearSelectedChallenge: (state) => {
       state.selectedChallenge = null;
+    },
+    clearApproveChallenge: (state) => {
+      state.success.approveChallenge=false;
+    },
+    clearRejectChallenge: (state)=>{
+      state.success.rejectChallenge=false;
     }
   },
   extraReducers: (builder) => {
@@ -161,6 +168,6 @@ const challengeSlice = createSlice({
   }
 });
 
-export const { clearSelectedChallenge } = challengeSlice.actions;
+export const { clearSelectedChallenge, clearApproveChallenge, clearRejectChallenge } = challengeSlice.actions;
 
 export default challengeSlice.reducer;

@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { moderateScale } from 'react-native-size-matters';
 
 const statusMap = {
   '요청': '대기',
@@ -11,9 +12,9 @@ const statusMap = {
 
 const getStatusColor = (status) => {
   switch (status) {
-    case 'PENDING': return '#006CFF';
-    case 'REJECTED': return '#D91616';
-    case 'COMPLETED': return '#189D66';
+    case '요청': return '#006CFF';
+    case '거절': return '#D91616';
+    case '승인': return '#189D66';
     // case 'IN_PROGRESS': return '#FF9500';
     default: return '#999';
   }
@@ -29,6 +30,7 @@ const UserMissionReviewCard = ({ mission,missionInfo, onPress, statusMap }) => {
 
   useEffect(()=>{
     console.log("mission info",mission);
+    console.log("card status",status);
   },[])
 
   return (
@@ -41,7 +43,7 @@ const UserMissionReviewCard = ({ mission,missionInfo, onPress, statusMap }) => {
       </View>
       <Text style={styles._nickname}>사용자: {user_nickname}</Text>
       <Text style={styles.status}>
-        상태: <Text style={{ color: getStatusColor(mission.status) }}>
+        상태: <Text style={{ color: getStatusColor(status) }}>
             {statusMap[status] || '알 수 없음'}
         </Text>
       </Text>
@@ -63,6 +65,9 @@ const styles = StyleSheet.create({
   icon: { marginRight: 8 },
   title: { fontWeight: 'bold', fontSize: 16 },
   user: { marginTop: 6 },
+  _nickname:{
+    marginTop:moderateScale(5),
+  },
   status: { marginTop: 4 },
   date: { marginTop: 4, textAlign: 'right', color: '#888', fontSize: 12 },
 });

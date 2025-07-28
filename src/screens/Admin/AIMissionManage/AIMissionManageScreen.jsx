@@ -14,7 +14,7 @@ import MissionCard from "./components/MissionCard";
 import COLORS from "../../../constants/colors";
 import { moderateScale } from "react-native-size-matters";
 import CreateMissionsModal from "./components/CreateMissionsModal";
-import { createMissionList, createMissions, fetchMissions } from "../../../redux/slices/missionSlice";
+import { activateMission, createMissionList, createMissions, deleteMission, fetchMissions } from "../../../redux/slices/missionSlice";
 import { useDispatch, useSelector } from "react-redux";
 import EditMissionModal from "./components/EditMissionModal";
 
@@ -22,6 +22,7 @@ const {width,height} = Dimensions.get('window');
 
 const AIMissionManageScreen = () => {
   const dispatch = useDispatch();
+  const createLoading = useSelector((state)=>state.mission.loading.createMissionList)
   const missionLoading = useSelector((state) => state.mission.loading.fetchMissions);
   const missionError = useSelector((state) => state.mission.error.fetchMissions);
 
@@ -32,6 +33,10 @@ const AIMissionManageScreen = () => {
   const [selectedMission, setSelectedMission] = useState(null);
   const { missionList, error } = useSelector((state) => state.mission);
  
+  // useEffect(()=>{
+  //   console.log("missionList",missionList);
+  // },[missionList])
+
   useEffect(()=>{
       dispatch(fetchMissions({status:'CREATE'})); //CREATE,ACTIVATE,DELETE
   },[])
@@ -69,6 +74,50 @@ const AIMissionManageScreen = () => {
     // ✅ dispatch(updateMissionThunk(updatedMission)) 등 API 요청 가능
   };
 
+const handleApproveAll = () => {
+  if (missionList.length === 0) {
+    Alert.alert('알림', '승인할 미션이 없습니다.');
+    return;
+  }
+
+  Alert.alert(
+    '모두 승인',
+    '현재 표시된 모든 미션을 승인하시겠습니까?',
+    [
+      { text: '취소', style: 'cancel' },
+      {
+        text: '승인',
+        onPress: () => {
+          const allMissionIds = missionList.map(m => m.id);
+          dispatch(activateMission({ mission_list: allMissionIds }));
+        }
+      }
+    ]
+  );
+};
+
+const handleRejectAll = () => {
+  if (missionList.length === 0) {
+    Alert.alert('알림', '반려할 미션이 없습니다.');
+    return;
+  }
+
+  Alert.alert(
+    '모두 반려',
+    '현재 표시된 모든 미션을 반려하시겠습니까?',
+    [
+      { text: '취소', style: 'cancel' },
+      {
+        text: '반려',
+        onPress: () => {
+          const allMissionIds = missionList.map(m => m.id);
+          dispatch(deleteMission({ mission_list: allMissionIds }));
+        }
+      }
+    ]
+  );
+};  
+
   return (
     <View style={styles.container}>
       {/* 헤더 */}
@@ -92,13 +141,18 @@ const AIMissionManageScreen = () => {
         </View>
 
         {/* 미션 카드 리스트 */}
-        {missionLoading?
+        {missionLoading||createLoading?
             <View style={styles.spinnerBox}>
               <ActivityIndicator size={80} color="gray"/>
             </View>
         :
-          missionList?.map((mission) => (
-              <MissionCard key={mission.id} mission={mission} handleEditClick={handleEditClick}/>
+          missionList?.length===0?
+            <View style={styles.spinnerBox}>
+              <Text style={styles.missionText}>미션 목록 없음. 미션을 생성해주세요</Text>
+            </View>
+          :
+            missionList?.map((mission) => (
+                <MissionCard key={mission.id} mission={mission} handleEditClick={handleEditClick}/>
           ))}      
 
         {/* {missions.map((mission) => (
@@ -108,10 +162,10 @@ const AIMissionManageScreen = () => {
 
       {/* 하단 버튼 */}
       <View style={styles.bottomButtonRow}>
-        <TouchableOpacity style={styles.approveAll}>
+        <TouchableOpacity style={styles.approveAll} onPress={handleApproveAll}>
           <Text style={styles.approveAllText}>모두 승인</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.rejectAll}>
+        <TouchableOpacity style={styles.rejectAll} onPress={handleRejectAll}>
           <Text style={styles.rejectAllText}>모두 반려</Text>
         </TouchableOpacity>
       </View>
@@ -216,5 +270,8 @@ const styles = StyleSheet.create({
     height:height*0.55,
     justifyContent:"center",
     // borderWidth:1,
+  },
+    missionText:{
+    textAlign:"center",
   },
 });

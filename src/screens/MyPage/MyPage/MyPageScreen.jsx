@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    paddingTop: height * 0.1,
+    paddingTop: height * 0.08,
   },
   profileContainer: {
     backgroundColor: '#17704B',

@@ -23,7 +23,8 @@ const MissionCard = ({ mission, handleEditClick }) => {
         {
           text: '승인',
           onPress: () => {
-            dispatch(activateMission({missionId:mission.id}));
+            console.log("missionId",mission.id)
+            dispatch(activateMission({mission_list:[mission.id]}));
           },
         },
       ]
@@ -40,7 +41,7 @@ const MissionCard = ({ mission, handleEditClick }) => {
           text: '반려',
           onPress: () => {
             console.log("hi")
-            dispatch(deleteMission({missionId:mission.id}));
+            dispatch(deleteMission({mission_list:[mission.id]}));
           },
         },
       ]

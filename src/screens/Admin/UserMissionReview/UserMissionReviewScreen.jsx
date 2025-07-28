@@ -7,38 +7,38 @@ import FilterDropdown from './components/FilterDropdown';
 import { fetchChallenges } from '../../../redux/slices/challengeSlice';
 import { useDispatch, useSelector } from 'react-redux';
 
-const missions = [
-  {
-    id: '1',
-    title: '텀블러 사용하기',
-    type: 'WEEKLY',
-    user: '천안요정',
-    status: 'PENDING',
-    category: '일상 속 습관',
-    date: '2025.07.24',
-    icon: 'sunny-outline',
-  },
-  {
-    id: '2',
-    title: '미션 우이이 인증',
-    type: 'WEEKLY',
-    user: '천안요정',
-    status: 'PENDING',
-    category: '일상 속 습관',
-    date: '25.07.24',
-    icon: 'bag-outline',
-  },
-  {
-    id: '3',
-    title: '미션 이이잉 인증',
-    type: 'DAILY',
-    user: '춘식이얌',
-    status: 'PENDING',
-    category: '일상 속 습관',
-    date: '25.07.24',
-    icon: 'repeat-outline',
-  },
-];
+// const missions = [
+//   {
+//     id: '1',
+//     title: '텀블러 사용하기',
+//     type: 'WEEKLY',
+//     user: '천안요정',
+//     status: 'PENDING',
+//     category: '일상 속 습관',
+//     date: '2025.07.24',
+//     icon: 'sunny-outline',
+//   },
+//   {
+//     id: '2',
+//     title: '미션 우이이 인증',
+//     type: 'WEEKLY',
+//     user: '천안요정',
+//     status: 'PENDING',
+//     category: '일상 속 습관',
+//     date: '25.07.24',
+//     icon: 'bag-outline',
+//   },
+//   {
+//     id: '3',
+//     title: '미션 이이잉 인증',
+//     type: 'DAILY',
+//     user: '춘식이얌',
+//     status: 'PENDING',
+//     category: '일상 속 습관',
+//     date: '25.07.24',
+//     icon: 'repeat-outline',
+//   },
+// ];
 
 const {width,height} = Dimensions.get('window');
 
@@ -65,7 +65,7 @@ const UserMissionReviewScreen = () => {
   const error = useSelector((state) => state.challenge.error.fetchChallenges);
   const {challengeList} = useSelector((state)=>state.challenge)
 
-  const [sortedMissions, setSortedMissions] = useState(missions);
+  // const [sortedMissions, setSortedMissions] = useState(missions);
   const [statusFilter, setStatusFilter] = useState('PENDING'); // 기본값: 대기 
   
 
@@ -125,15 +125,18 @@ const UserMissionReviewScreen = () => {
           <Text style={styles.missionText}>미션 목록 없음. 다른 항목으로 시도해주세요</Text>
         </View>
         :
-        <FlatList
-          data={challengeList}
-          keyExtractor={(item) => item.challenge_id}
-          renderItem={({ item }) => {
-            return(
-            <UserMissionReviewCard mission={item} missionInfo={item.mission_info} statusMap={statusMap} onPress={() => handleCardPress(item.challenge_id)} />
-          )}}
-          contentContainerStyle={{ paddingBottom: 20 }}
-        />
+        <View style={styles.listContainer}>
+          <FlatList
+            data={challengeList}
+            keyExtractor={(item) => item.challenge_id}
+            renderItem={({ item }) => {
+              return(
+              <UserMissionReviewCard mission={item} missionInfo={item.mission_info} statusMap={statusMap} onPress={() => handleCardPress(item.challenge_id)} />
+            )}}
+            contentContainerStyle={{ paddingBottom: 20 }}
+          />
+        </View>
+
       }
       
     </View>
@@ -164,7 +167,10 @@ const styles = StyleSheet.create({
   },
   missionText:{
     textAlign:"center",
-  }
+  },
+  listContainer:{
+    height:height*0.8,
+  },
 });
 
 export default UserMissionReviewScreen;

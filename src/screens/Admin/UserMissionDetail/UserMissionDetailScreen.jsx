@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, Modal, Pre
 import COLORS from '../../../constants/colors';
 import { Ionicons } from '@expo/vector-icons';
 import { moderateScale } from 'react-native-size-matters';
-import { approveChallenge, clearSelectedChallenge, fetchChallengeDetail, rejectChallenge } from '../../../redux/slices/challengeSlice';
+import { approveChallenge, clearApproveChallenge, clearRejectChallenge, clearSelectedChallenge, fetchChallengeDetail, rejectChallenge } from '../../../redux/slices/challengeSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import LoadingSpinner from '../../../components/LoadingSpinner';
 
@@ -40,6 +40,20 @@ const UserMissionDetailScreen = ({ route, navigation }) => {
       dispatch(clearSelectedChallenge());
     };    
   },[missionId])
+
+  useEffect(()=>{
+    if(approveLoading){
+      dispatch(clearApproveChallenge());
+      navigation.navigate("UserMissionReviewScreen")
+    }
+  },[approveLoading])
+
+  useEffect(()=>{
+    if(rejectLoading){
+      dispatch(clearRejectChallenge());
+      navigation.navigate("UserMissionReviewScreen")
+    }
+  },[rejectLoading])  
 
   const handleApprove = (missionId) => {
     console.log("missionId",missionId);

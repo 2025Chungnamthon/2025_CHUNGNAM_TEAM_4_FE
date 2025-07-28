@@ -34,6 +34,7 @@ const processQueue = (error, token = null) => {
 
 // // 토큰 자동 포함 (선택)
 api.interceptors.request.use(async(config) => {
+  // await deleteTokens();
   const token = await getAccessToken(); 
   // const token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIxMSIsInJvbGUiOiJVU0VSIiwidHlwZSI6IkFDQ0VTUyIsImlhdCI6MTc1MzcwNjAzOCwiZXhwIjoxNzUzNzA5NjM4fQ.V1ha2MpraJ24Yv9WCRIjarRe-xLP3j6X1zzlg7FpzDeL-121WKc8zOWIJ5pTee4SWiQr6xVnpwYlIrhkI2Ic1w"
   if (token) {
@@ -50,7 +51,7 @@ api.interceptors.response.use(
     const originalRequest = error.config;
 
     // accessToken 만료(401) + 중복 재시도 방지
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    if (error.response?.status === 401 && error.response?.status === 403 && !originalRequest._retry) {
       originalRequest._retry = true;
 
       if (isRefreshing) {

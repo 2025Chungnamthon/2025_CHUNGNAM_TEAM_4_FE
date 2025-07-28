@@ -12,53 +12,6 @@ import { fetchUserMissions } from '../../../redux/slices/userMissionSlice';
 
 const {width, height} = Dimensions.get('window');
 
-const missionData = [
-  { 
-    id: '1',
-    title: '제로웨이스트 매장 방문',
-    rewardPoints: 500,
-    category: "일상 속 습관",    
-    // category: "친환경 이동",
-    // category: "친환경 소비",
-    // category: "재활용/자원순환",
-    // category: "에너지 절약",
-    // category: "저탄소 식생활",
-    // category: "환경 교육/확산",
-    // category: "지역사회/공동체 활동",
-    type: 'WEEKLY',
-    description: '제로웨이스트 매장 방문 후 사진 인증하기, 본인을 인증할 수 있는 사진 2장 첨부 필수',
-  },
-  {
-    id: '2',
-    title: '친환경 캠페인 알리기',
-    rewardPoints: 40,
-    icon: 'cube-outline',
-    type: 'DAILY',
-    description: '친환경 캠페인 소식이나 정보를 친구나 주변인에게 공유한 후 알린 내용을 인증할 수 있는 사진 첨부',
-    category: "친환경 소비",
-  },
-  {
-    id: '3',
-    title: '플로깅 실천하기',
-    rewardPoints: 60,
-    icon: 'cube-outline',
-    type: 'DAILY',
-    description: '천안 지역에서 플로깅을 실천 후 인증할 수 있는 사진 2장 첨부하기 (장소 인증 필수)',
-    category: "재활용/자원순환",
-  },
-  {
-    id: '4',
-    title: '장바구니 지참하기',
-    rewardPoints: 30,
-    icon: 'cube-outline',
-    type: 'DAILY',
-    description: '장바구니를 지참하여 마트나 시장에서 장을보고 인증하기 장바구니에 물건이 담겨진 사진 첨부',
-    category: "에너지 절약",
-  },
-];
-
-
-
 const MyMissionListScreen = () => {
   const dispatch = useDispatch();
   const [expandedIndex, setExpandedIndex] = useState(null);

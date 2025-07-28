@@ -54,15 +54,15 @@ export const fetchMissions = createAsyncThunk(
 // 미션 승인 (PATCH /api/admin/missions/{missionId}/activate)
 export const activateMission = createAsyncThunk(
   'missions/activateMission',
-  async ({missionId}, { dispatch, rejectWithValue }) => {
+  async ({mission_list}, { dispatch, rejectWithValue }) => {
     try {
       console.log("hello");
-      console.log(missionId)
-      const response = await api.patch(`/api/admin/missions/${missionId}/activate`);
+      // console.log(missionId)
+      const response = await api.patch("/api/admin/missions/activate", {mission_list});
       dispatch(fetchMissions({status:'CREATE'}));
       return response.data; // 활성화된 미션 반환
     } catch (error) {
-      console.log("error",error.response.data.message)
+      console.log("error",error)
       return rejectWithValue(error.response.data.message); // 실패 시 에러 메시지 반환
     }
   }
@@ -71,11 +71,11 @@ export const activateMission = createAsyncThunk(
 // 미션 반려 (DELETE /api/admin/missions/{missionId}/delete)
 export const deleteMission = createAsyncThunk(
   'missions/deleteMission', 
-  async ({missionId}, { dispatch, rejectWithValue }) => {
+  async ({mission_list}, { dispatch, rejectWithValue }) => {
     try {
       console.log("hello");
-      console.log(missionId)      
-      const response = await api.patch(`/api/admin/missions/${missionId}/delete`);
+      // console.log(missionId)      
+      const response = await api.patch(`/api/admin/missions/delete`,{mission_list});
       dispatch(fetchMissions({status:'CREATE'}));
       return response.data; // 삭제된 미션 반환
     } catch (error) {

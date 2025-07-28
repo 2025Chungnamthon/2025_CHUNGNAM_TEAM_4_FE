@@ -2,22 +2,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import api from '../../utils/api';
 import { logoutUser } from './userSlice';
 
-// 1. 사용자 메인 정보 조회
-// export const fetchUserMainInfo = createAsyncThunk(
-//   'userMissions/fetchUserMainInfo',
-//   async (_, { rejectWithValue }) => {
-//     try {
-//       const response = await api.get('/api/users/main');
-//       console.log("user info",response.data)
-//       return response.data;
-//     } catch (error) {
-//       console.log(error.response.data.message);
-//       return rejectWithValue(error.response.data.message);
-//     }
-//   }
-// );
-
-// 2. 미션 목록 조회
+// 1. 미션 목록 조회
 export const fetchUserMissions = createAsyncThunk(
   'userMissions/fetchUserMissions',
   async (_, { rejectWithValue }) => {
@@ -33,7 +18,7 @@ export const fetchUserMissions = createAsyncThunk(
   }
 );
 
-// 3. 미션 상세 조회
+// 2. 미션 상세 조회
 export const fetchMissionDetail = createAsyncThunk(
   'userMissions/fetchMissionDetail',
   async (missionId, { rejectWithValue }) => {
@@ -46,7 +31,7 @@ export const fetchMissionDetail = createAsyncThunk(
   }
 );
 
-// 4. 미션 선택
+// 3. 미션 선택
 export const selectMissions = createAsyncThunk(
   'userMissions/selectMissions',
   async ({ dailyMissionIds , weeklyMissionIds }, { rejectWithValue }) => {
@@ -65,7 +50,7 @@ export const selectMissions = createAsyncThunk(
   }
 );
 
-// 5. 미션 제출
+//4. 미션 제출
 export const submitMission = createAsyncThunk(
   'userMissions/submitMission',
   async ({ userMissionId, description, images }, { rejectWithValue }) => {
@@ -153,7 +138,10 @@ const userMissionSlice = createSlice({
   reducers: {
     clearSubmissionResult: (state) => {
       state.submissionResult = null;
-    }
+    },
+    clearSubmitResultSuccess: (state)=>{
+      state.success.submitMission=false;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -242,6 +230,6 @@ const userMissionSlice = createSlice({
   }
 });
 
-export const { clearSubmissionResult } = userMissionSlice.actions;
+export const { clearSubmissionResult, clearSubmitResultSuccess } = userMissionSlice.actions;
 
 export default userMissionSlice.reducer;
