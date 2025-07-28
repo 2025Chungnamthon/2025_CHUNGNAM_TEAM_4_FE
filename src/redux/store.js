@@ -3,6 +3,7 @@ import userSlice from "./slices/userSlice";
 import missionSlice from "./slices/missionSlice";
 import userMissionSlice from "./slices/userMissionSlice";
 import challengeSlice from "./slices/challengeSlice";
+import communitySlice from "./slices/communitySlice";
 
 const store = configureStore({
     reducer:{
@@ -10,6 +11,7 @@ const store = configureStore({
         mission:missionSlice,
         userMission:userMissionSlice,
         challenge:challengeSlice,
+        community:communitySlice,
     }
 });
 
