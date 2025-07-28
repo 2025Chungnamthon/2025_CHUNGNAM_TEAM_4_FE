@@ -1,112 +1,44 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-// import api from '../../utils/api'; // api.js에서 설정한 axios 인스턴스 사용
+import api from '../../utils/api';
 
-// 🔸 게시글 리스트를 가져오는 thunk
+// 게시글 목록 조회 (페이징, 정렬 지원)
 export const fetchCommunityPosts = createAsyncThunk(
   'community/fetchCommunityPosts',
-  async (_, thunkAPI) => {
+  async ({ page = 0, limit = 10, sort = 'date' } = {}, thunkAPI) => {
     try {
-      // ✅ 실제 백엔드 API 요청 (나중에 사용)
-      // const response = await api.get('/api/community/posts'); 
-      // return response.data;
-
-      // 🔸 지금은 임시 데이터 반환
-      return [
-        {
-          id: '1',
-          date: '20250717',
-          title: '쌍용공원 플로깅 후기',
-          author: '강민섭님',
-          preview: '오늘은 ANA 미션 수행을 위해 쌍용공원에서...',
-          imageUrl: 'https://via.placeholder.com/300x150',
-        },
-        {
-          id: '2',
-          date: '20250716',
-          title: '삼거리공원 무포장 피크닉 체험',
-          author: '정기찬님',
-          preview: '점심 시간에 다녀왔는데 날씨가 정말 좋았어요.',
-          imageUrl: 'https://via.placeholder.com/300x150',
-        },
-      ];
+      const response = await api.get(`/api/users/community/posts?page=${page}&limit=${limit}&sort=${sort}`);
+      return response.data;
     } catch (error) {
       console.error('게시글 리스트 요청 실패:', error);
       return thunkAPI.rejectWithValue(error.response?.data || error.message);
     }
   }
 );
-// 게시글 상세 가져오기
-// export const fetchCommunityDetail = createAsyncThunk(
-//   'community/fetchDetail',
-//   async (postId, thunkAPI) => {
-//     try {
-//       const response = await axios.get(`/api/community/posts/${postId}`);
-//       return response.data;
-//     } catch (error) {
-//       return thunkAPI.rejectWithValue(error.response?.data || error.message);
-//     }
-//   }
-// );
-const mockPostDetails = {
-  '1': {
-    id: '1',
-    title: '쌍용공원 플로깅 후기',
-    author: '강민섭님',
-    date: '2025-07-17',
-    content: '오늘은 ANA 미션 수행을 위해 쌍용공원에서 플로깅을 했습니다!',
-    imageUrl: 'https://via.placeholder.com/400x200.png?text=쌍용공원',
-    likedByMe: false,
-    likeCount: 3,
-    commentCount: 5,
-    comments: [
-      { author: '홍길동', content: '정말 멋지네요!' },
-      { author: '김철수', content: '저도 다음에 참여하고 싶어요!' },
-    ]
-  },
-  '2': {
-    id: '2',
-    title: '삼거리공원 무포장 피크닉 체험',
-    author: '정기찬님',
-    date: '2025-07-16',
-    content: '점심 시간에 다녀왔는데 날씨가 정말 좋았어요.',
-    imageUrl: 'https://via.placeholder.com/400x200.png?text=삼거리공원',
-    likedByMe: true,
-    likeCount: 10,
-    commentCount: 2,
-    comments: [
-      { author: '이영희', content: '부럽습니다~' },
-    ]
-  }
-};
 
+// 게시글 상세 조회
 export const fetchCommunityDetail = createAsyncThunk(
   'community/fetchDetail',
   async (postId, thunkAPI) => {
     try {
-      return new Promise((resolve, reject) => {
-        setTimeout(() => {
-          const detail = mockPostDetails[postId];
-          if (detail) {
-            resolve(detail);
-          } else {
-            reject(new Error('해당 게시글이 존재하지 않습니다.'));
-          }
-        }, 500);
-      });
+      const response = await api.get(`/api/users/community/posts/${postId}`);
+      return response.data;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error.message);
+      return thunkAPI.rejectWithValue(error.response?.data || error.message);
     }
   }
 );
+
+// 게시글 작성
 export const postCommunity = createAsyncThunk(
   'community/postCommunity',
-  async (formData, { rejectWithValue }) => {
+  async (formData, { dispatch,rejectWithValue }) => {
     try {
-      const response = await api.post('/api/community/upload', formData, {
+      const response = await api.post('/api/users/community/posts', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
+      dispatch(fetchCommunityPosts());
       return response.data;
     } catch (err) {
       return rejectWithValue(err.response?.data || '오류 발생');
@@ -114,14 +46,15 @@ export const postCommunity = createAsyncThunk(
   }
 );
 
+// 좋아요 토글
 export const toggleLike = createAsyncThunk(
   'community/toggleLike',
   async (postId, { rejectWithValue }) => {
     try {
-      await api.post(`/api/community/posts/${postId}/like`);
-      return postId;
+      const response = await api.post(`/api/users/community/posts/${postId}/like`);
+      return { postId, isLiked: response.data.liked };
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || '좋아요 처리 실패');
+      return rejectWithValue(error.response?.data || '좋아요 처리 실패');
     }
   }
 );
@@ -130,9 +63,18 @@ const communitySlice = createSlice({
   name: 'community',
   initialState: {
     posts: [],
-    postDetail: null, // ✅ 객체형태
+    postDetail: null,
     loading: false,
     error: null,
+    success: false,
+    pagination: {
+      currentPage: 0,
+      totalPages: 0,
+      totalElements: 0,
+      size: 10,
+      hasNext: false,
+      hasPrevious: false,
+    },
   },
   reducers: {
     resetStatus: (state) => {
@@ -143,22 +85,42 @@ const communitySlice = createSlice({
     clearDetail: (state) => {
       state.postDetail = null;
     },
-
+    clearPosts: (state) => {
+      state.posts = [];
+      state.pagination = {
+        currentPage: 0,
+        totalPages: 0,
+        totalElements: 0,
+        size: 10,
+        hasNext: false,
+        hasPrevious: false,
+      };
+    },
   },
   extraReducers: (builder) => {
     builder
+      // 게시글 목록 조회
       .addCase(fetchCommunityPosts.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(fetchCommunityPosts.fulfilled, (state, action) => {
         state.loading = false;
-        state.posts = action.payload;
+        state.posts = action.payload.posts;
+        state.pagination = {
+          currentPage: action.payload.currentPage,
+          totalPages: action.payload.totalPages,
+          totalElements: action.payload.totalElements,
+          size: action.payload.size,
+          hasNext: action.payload.hasNext,
+          hasPrevious: action.payload.hasPrevious,
+        };
       })
       .addCase(fetchCommunityPosts.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || '에러 발생';
       })
+      // 게시글 상세 조회
       .addCase(fetchCommunityDetail.pending, (state) => {
         state.loading = true;
       })
@@ -170,14 +132,35 @@ const communitySlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
+      // 좋아요 토글
       .addCase(toggleLike.fulfilled, (state, action) => {
-        if (state.postDetail) {
-          const isLiked = state.postDetail.likedByMe;
-          state.postDetail.likedByMe = !isLiked;
-          state.postDetail.likeCount += isLiked ? -1 : 1;
+        const { postId, isLiked } = action.payload;
+        
+        // 상세 화면에서 좋아요 상태 업데이트
+        if (state.postDetail && state.postDetail.id === postId) {
+          state.postDetail.liked = isLiked;
+          // isLiked가 true면 +1, false면 -1
+          if (isLiked) {
+            state.postDetail.likeCount += 1;
+          } else {
+            state.postDetail.likeCount -= 1;
+          }
+        }
+        
+        // 목록에서 좋아요 상태 업데이트
+        const postIndex = state.posts.findIndex(post => post.id === postId);
+        if (postIndex !== -1) {
+          state.posts[postIndex].liked = isLiked;
+          // isLiked가 true면 +1, false면 -1
+          if (isLiked) {
+            state.posts[postIndex].likeCount += 1;
+          } else {
+            state.posts[postIndex].likeCount -= 1;
+          }
         }
       })
-       .addCase(postCommunity.pending, (state) => {
+      // 게시글 작성
+      .addCase(postCommunity.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
@@ -189,8 +172,8 @@ const communitySlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       });
-      
   },
 });
-export const {resetStatus, clearDetail} = communitySlice.actions;
+
+export const { resetStatus, clearDetail, clearPosts } = communitySlice.actions;
 export default communitySlice.reducer;
