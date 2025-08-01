@@ -4,20 +4,20 @@
     "slug": "ana-fe",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./src/assets/etc/icon.png",
+    "icon": "./src/assets/etc/app-icon.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
-      "image": "./src/assets/etc/splash-icon.png",
+      "image": "./src/assets/etc/app-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#15925E"
     },
     "ios": {
       "supportsTablet": true
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./src/assets/etc/adaptive-icon.png",
+        "foregroundImage": "./src/assets/etc/app-icon.png",
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
