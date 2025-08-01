@@ -98,20 +98,19 @@ const CommunityWriteScreen = () => {
 
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
       
       {/* 헤더 */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <MaterialIcons name="arrow-back" size={24} color="#333" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>SKTelecom</Text>
-        <Text style={styles.headerStatus}>54%</Text>
+        <Text style={styles.headerTitle}>글 작성하기</Text>
+        <Text style={styles.headerStatus}></Text>
       </View>
 
       <ScrollView style={styles.scrollContent}>
         {/* 제목 */}
-        <Text style={styles.screenTitle}>글 작성하기</Text>
+        {/* <Text style={styles.screenTitle}>글 작성하기</Text> */}
 
         {/* 제목 입력 */}
         <Text style={styles.label}>제목</Text>
@@ -223,7 +222,10 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   titleInput: {
-    borderBottomWidth: 1,
+    // borderBottomWidth: 1,
+    borderWidth:1,
+    borderRadius:8,
+    paddingLeft:8,
     borderColor: '#ddd',
     paddingVertical: 12,
     fontSize: 16,

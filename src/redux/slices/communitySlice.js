@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import api from '../../utils/api';
+import showToast from '../../components/ToastMessage';
 
 // 게시글 목록 조회 (페이징, 정렬 지원)
 export const fetchCommunityPosts = createAsyncThunk(
@@ -10,6 +11,8 @@ export const fetchCommunityPosts = createAsyncThunk(
       return response.data;
     } catch (error) {
       console.error('게시글 리스트 요청 실패:', error);
+      showToast("❌ "+error?.response.data.message || "정보 불러오기 실패");      
+
       return thunkAPI.rejectWithValue(error.response?.data || error.message);
     }
   }
@@ -23,6 +26,7 @@ export const fetchCommunityDetail = createAsyncThunk(
       const response = await api.get(`/api/users/community/posts/${postId}`);
       return response.data;
     } catch (error) {
+      showToast("❌ "+error?.response.data.message || "정보 불러오기 실패");        
       return thunkAPI.rejectWithValue(error.response?.data || error.message);
     }
   }
@@ -38,9 +42,12 @@ export const postCommunity = createAsyncThunk(
           'Content-Type': 'multipart/form-data',
         },
       });
+      showToast("✅ "+"게시물 등록 성공");
       dispatch(fetchCommunityPosts());
       return response.data;
     } catch (err) {
+      console.log(err);
+      showToast("❌ "+error?.response.data.message || "게시물 등록 실패");        
       return rejectWithValue(err.response?.data || '오류 발생');
     }
   }
@@ -52,8 +59,11 @@ export const toggleLike = createAsyncThunk(
   async (postId, { rejectWithValue }) => {
     try {
       const response = await api.post(`/api/users/community/posts/${postId}/like`);
+      showToast("✅ "+"좋아요");
       return { postId, isLiked: response.data.liked };
     } catch (error) {
+      showToast("❌ "+error?.response.data.message || "서버 오류");        
+
       return rejectWithValue(error.response?.data || '좋아요 처리 실패');
     }
   }

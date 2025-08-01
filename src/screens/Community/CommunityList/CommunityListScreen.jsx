@@ -3,9 +3,13 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import {
   View, Text, StyleSheet, FlatList, Image, ActivityIndicator, TouchableOpacity, Alert, StatusBar,
+  Dimensions,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCommunityPosts, clearPosts } from "../../../redux/slices/communitySlice";
+import { moderateScale } from "react-native-size-matters";
+
+const {width,height} = Dimensions.get('window');
 
 const CommunityListScreen = () => {
   const navigation = useNavigation();
@@ -87,14 +91,12 @@ const CommunityListScreen = () => {
   }
 
   return (
-    <View style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
-      
+    <View style={styles.container}>      
       {/* 헤더 */}
-      <View style={styles.header}>
+      {/* <View style={styles.header}>
         <Text style={styles.headerTitle}>SKTelecom</Text>
         <Text style={styles.headerStatus}>54%</Text>
-      </View>
+      </View> */}
 
       {/* 제목 */}
       <Text style={styles.screenTitle}>커뮤니티</Text>
@@ -154,38 +156,41 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#F9FAFB",
+    paddingTop:height*0.07,
   },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingTop: 50,
-    paddingBottom: 16,
-    backgroundColor: '#fff',
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
-  },
-  headerStatus: {
-    fontSize: 14,
-    color: '#666',
-  },
+  // header: {
+  //   flexDirection: 'row',
+  //   justifyContent: 'space-between',
+  //   alignItems: 'center',
+  //   paddingHorizontal: 16,
+  //   paddingTop: 50,
+  //   paddingBottom: 16,
+  //   backgroundColor: '#fff',
+  // },
+  // headerTitle: {
+  //   fontSize: 18,
+  //   fontWeight: 'bold',
+  //   color: '#333',
+  // },
+  // headerStatus: {
+  //   fontSize: 14,
+  //   color: '#666',
+  // },
   screenTitle: {
-    fontSize: 24,
+    fontSize: moderateScale(18),
+    textAlign:"center",
     fontWeight: 'bold',
     color: '#333',
     paddingHorizontal: 16,
-    paddingBottom: 16,
-    backgroundColor: '#fff',
+    marginBottom:moderateScale(16),
+    // backgroundColor: '#fff',
   },
   sortContainer: {
     flexDirection: 'row',
     paddingHorizontal: 16,
-    paddingBottom: 12,
-    backgroundColor: '#fff',
+    paddingTop: moderateScale(16),
+    paddingBottom: moderateScale(16),
+    // backgroundColor: '#fff',
     gap: 8,
   },
   sortButton: {
@@ -244,8 +249,8 @@ const styles = StyleSheet.create({
   },
   fab: {
     position: 'absolute',
-    bottom: 100,
-    right: 20,
+    bottom: 30,
+    right: 30,
     backgroundColor: '#4CAF50',
     borderRadius: 30,
     width: 60,

@@ -20,10 +20,17 @@
         "foregroundImage": "./src/assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.bmbx08.ana"
     },
     "web": {
       "favicon": "./src/assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "7c5e27c6-7646-4599-a946-12dfdbafc76a"
+      }
+    },
+    "owner": "bmbx08"
   }
 }

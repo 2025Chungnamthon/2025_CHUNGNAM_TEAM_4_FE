@@ -28,7 +28,7 @@ const TabNavigator = () => {
         tabBarShowLabel: false, // 기본 라벨 제거 (우리가 직접 구현)
         tabBarStyle: {
           height: 100,
-          paddingTop: 10,
+          paddingTop:15,
         //   borderColor: "black",
         //   borderWidth: 3,
         //   paddingTop: 20

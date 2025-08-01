@@ -18,6 +18,11 @@ const MyPageScreen = () => {
   const logoutSuccess = useSelector((state) => state.user.success.logoutUser);
   const logoutError = useSelector((state) => state.user.error.logoutUser);
 
+  const handleLogout=()=>{
+    console.log("start logout")
+    dispatch(logoutUser());
+  }
+
   const adminMenuItems = [
     { label: '관리자 화면', func: ()=>navigation.navigate('AdminStack')},    
     { label: '내정보 확인', func: ()=>navigation.navigate('UserInfoScreen')},
@@ -44,10 +49,7 @@ const MyPageScreen = () => {
     dispatch(clearLogoutSuccess());
   })
 
-  const handleLogout=()=>{
-    console.log("start logout")
-    dispatch(logoutUser());
-  }
+
 
   const renderMenuItem = ({ item }) => (
     <TouchableOpacity style={styles.menuItem} onPress={item.func}>

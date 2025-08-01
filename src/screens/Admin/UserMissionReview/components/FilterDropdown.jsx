@@ -41,9 +41,9 @@ const pickerStyles = {
     marginBottom: moderateScale(12),
   },
   inputAndroid: {
-    width:width*0.25,
+    width:width*0.27,
     fontSize: 14,
-    paddingVertical: moderateScale(6),
+    paddingVertical: moderateScale(10),
     paddingHorizontal: 12,
     borderWidth: 1,
     borderColor: '#189D66',

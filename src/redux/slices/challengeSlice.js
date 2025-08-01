@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import api from '../../utils/api';
+import showToast from '../../components/ToastMessage';
 
 // 1. 챌린지 목록 조회
 export const fetchChallenges = createAsyncThunk(
@@ -11,6 +12,7 @@ export const fetchChallenges = createAsyncThunk(
       return response.data.challengeList;
     } catch (error) {
         console.log("error: ",error)
+      showToast("❌ "+error?.response.data.message || "정보 불러오기 실패");                
       return rejectWithValue(error.response.data.message);
     }
   }
@@ -26,6 +28,7 @@ export const fetchChallengeDetail = createAsyncThunk(
       return response.data;
     } catch (error) {
       console.log("error: ",error.response.data.message);
+      showToast("❌ "+error?.response.data.message || "정보 불러오기 실패");        
       return rejectWithValue(error.response.data.message);
     }
   }
@@ -39,9 +42,11 @@ export const approveChallenge = createAsyncThunk(
       console.log("approve start");
       const response = await api.patch(`/api/admin/challenges/${challengeId}/approve`);
       console.log("response data",response.data)
+      showToast("✅ "+"미션 승인");
       return response.data;
     } catch (error) {
       console.log("error: ",error.response.data.message);
+      showToast("❌ "+error?.response.data.message || "미션 승인 실패");        
       return rejectWithValue(error.response.data.message);
     }
   }
@@ -55,9 +60,11 @@ export const rejectChallenge = createAsyncThunk(
       console.log("start")
       const response = await api.patch(`/api/admin/challenges/${challengeId}/reject`,{reject_reason});
       console.log("response data",response.data)
+      showToast("✅ "+"미션 반려");
       return response.data;
     } catch (error) {
       console.log("error: ",error);
+      showToast("❌ "+error?.response.data.message || "미션 반려 실패");        
       return rejectWithValue(error.response.data.message);
     }
   }

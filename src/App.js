@@ -6,6 +6,8 @@ import {SafeAreaProvider} from "react-native-safe-area-context";
 import {Provider} from "react-redux";
 import store from "./redux/store";
 import { ActionSheetProvider } from "@expo/react-native-action-sheet";
+import Toast from "react-native-root-toast";
+import { RootSiblingParent } from "react-native-root-siblings";
 // import * as SystemUI from 'expo-system-ui'; // 추가
 
 export default function App() {
@@ -16,11 +18,14 @@ export default function App() {
   return (
     <Provider store={store}>
       <SafeAreaProvider>
-        <ActionSheetProvider>        
-          <NavigationContainer>
-            <StackNavigator />
-          </NavigationContainer>
-        </ActionSheetProvider>    
+        <RootSiblingParent>
+          <ActionSheetProvider>        
+            <NavigationContainer>
+              <StackNavigator />
+            </NavigationContainer>
+          </ActionSheetProvider>
+          {/* <Toast/>    */}
+        </RootSiblingParent>         
       </SafeAreaProvider>
     </Provider>
   );

@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import api from "../../utils/api";
+import showToast from "../../components/ToastMessage";
 
 // AI 미션들 생성 (POST /api/admin/ai-missions/generate)
 export const createMissionList = createAsyncThunk(
@@ -11,10 +12,12 @@ export const createMissionList = createAsyncThunk(
       console.log("post",`/api/admin/ai-missions/generate?category=${category}&type=${type}&size=10`);
       const response = await api.post(`/api/admin/ai-missions/generate?type=${type}&category=${category}&size=10`);    
       console.log("response",response.data)
+        showToast("✅ "+"미션 생성 성공!");
       dispatch(fetchMissions({status:'CREATE'})); 
       return response.data;
     } catch (error) {
-        console.log("error",error)
+      console.log("error",error)
+      showToast("❌ "+error?.response.data.message || "미션 생성 실패.");      
       return rejectWithValue(error.response.data.message);
     }
   }
@@ -45,7 +48,8 @@ export const fetchMissions = createAsyncThunk(
       // console.log(response.data);
       return response.data.mission_list; // 반환되는 미션 목록
     } catch (error) {
-        console.log(error.response.data.message);
+      console.log(error.response.data.message);
+      showToast("❌ "+error?.response.data.message || "정보 불러오기 실패");      
       return rejectWithValue(error.response.data.message); // 실패 시 에러 메시지 반환
     }
   }
@@ -60,9 +64,11 @@ export const activateMission = createAsyncThunk(
       // console.log(missionId)
       const response = await api.patch("/api/admin/missions/activate", {mission_list});
       dispatch(fetchMissions({status:'CREATE'}));
+        showToast("✅ "+"미션 승인");
       return response.data; // 활성화된 미션 반환
     } catch (error) {
       console.log("error",error)
+        showToast("❌ "+error?.response.data.message || "미션 승인 실패");      
       return rejectWithValue(error.response.data.message); // 실패 시 에러 메시지 반환
     }
   }
@@ -76,10 +82,12 @@ export const deleteMission = createAsyncThunk(
       console.log("hello");
       // console.log(missionId)      
       const response = await api.patch(`/api/admin/missions/delete`,{mission_list});
+        showToast("✅ "+"미션 반려");
       dispatch(fetchMissions({status:'CREATE'}));
       return response.data; // 삭제된 미션 반환
     } catch (error) {
-      console.log("error",error.response.data.message)      
+      console.log("error",error.response.data.message)     
+      showToast("❌ "+error?.response.data.message || "미션 반려 실패");      
       return rejectWithValue(error.response.data.message); // 실패 시 에러 메시지 반환
     }
   }
@@ -94,10 +102,12 @@ export const updateMission = createAsyncThunk(
       console.log("updatedData",updatedData);
       const response = await api.patch(`/api/admin/missions/${missionId}`, updatedData);
       console.log(response.data)
+      showToast("✅ "+"미션 수정 성공");
       dispatch(fetchMissions({status:'CREATE'}));      
       return response.data; // 수정된 미션 반환
     } catch (error) {
       console.log(error.response.data.message)
+      showToast("❌ "+error?.response.data.message || "미션 수정 실패");        
       return rejectWithValue(error.response.data.message); // 실패 시 에러 메시지 반환
     }
   }

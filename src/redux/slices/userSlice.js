@@ -2,6 +2,7 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import api from "../../utils/api";
 import { deleteTokens, saveAccessToken, saveRefreshToken } from "../../utils/tokenStorage";
 import { Alert } from "react-native";
+import showToast from "../../components/ToastMessage";
 
 export const loginUser = createAsyncThunk(
   "user/loginUser",
@@ -18,6 +19,9 @@ export const loginUser = createAsyncThunk(
 
 
       console.log("response 응답",response.data); 
+      
+      showToast("✅ "+response?.data.message);
+      
 
       const accessToken = response.data.accessToken
       const refreshToken = response.data.refreshToken
@@ -31,6 +35,7 @@ export const loginUser = createAsyncThunk(
       return response.data;
     } catch (error) {
         console.log("errorrr",error)
+        showToast("❌ "+error?.response.data.message || "로그인에 실패했습니다.");
       return rejectWithValue(error.response.data.message);
     }
   }
@@ -52,11 +57,12 @@ export const checkEmailDup = createAsyncThunk(
         } else{
           Alert.alert("중복 확인",response.data.message)
         }
-
+        // showToast("✅ "+"회원가입 성공했습니다!");
         return response.data;
       }catch(error){
         console.log("error: ",error.response.data);
-        Alert.alert("중복 확인",error.response.data.message);        
+        Alert.alert("중복 확인",error.response.data.message);  
+        showToast("❌중복확인: "+error?.response.data.message);       
         return rejectWithValue(error.response.data.message);
       }
     }
@@ -71,10 +77,12 @@ export const registerUser = createAsyncThunk(
       try{
         const response = await api.post("/api/users/sign-up",{email,nickname,password})
         console.log(response.data);
+        showToast("✅ "+"회원가입 성공했습니다!");
 
         return response.data;
       }catch(error){
         console.log(error.response.data.message);
+        showToast("❌ "+error?.response.data.message || "회원가입에 실패했습니다.");
         return rejectWithValue(error.response.data.message);
       }
     }
@@ -87,9 +95,11 @@ export const fetchUserMainInfo = createAsyncThunk(
     try {
       const response = await api.get('/api/users/main');
       console.log("user info",response.data)
+      
       return response.data;
     } catch (error) {
       console.log(error.response.data.message);
+      showToast("❌ 정보 불러오기 실패");
       return rejectWithValue(error.response.data.message);
     }
   }
@@ -103,9 +113,12 @@ export const logoutUser = createAsyncThunk(
       console.log("response",response.data);
       await deleteTokens(); // SecureStorage 토큰 삭제
       dispatch(clearUserInfo());
+
+      showToast("✅ "+"로그아웃 성공");
       return response.data;
     } catch (error) {
       console.log(error);
+      showToast("❌ "+error?.response.data.message || "로그아웃에 실패했습니다.");        
       return rejectWithValue(error.response?.data?.message || '로그아웃 실패');
     }
   }

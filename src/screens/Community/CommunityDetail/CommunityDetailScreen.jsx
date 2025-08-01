@@ -6,6 +6,7 @@ import { useNavigation } from '@react-navigation/native';
 import { fetchCommunityDetail, clearDetail, toggleLike } from '../../../redux/slices/communitySlice';
 import { FontAwesome } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
+import { moderateScale } from 'react-native-size-matters';
 
 const CommunityDetailScreen = ({ route }) => {
   const { postId } = route.params;
@@ -42,25 +43,29 @@ const CommunityDetailScreen = ({ route }) => {
 
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
       
       {/* 헤더 */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <MaterialIcons name="arrow-back" size={24} color="#333" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>SKTelecom</Text>
-        <Text style={styles.headerStatus}>54%</Text>
+        <Text style={styles.headerTitle}>{postDetail?.title}</Text>
+        <Text></Text>
+        {/* <Text style={styles.headerStatus}>54%</Text> */}
       </View>
+
+        {/* 작성자 & 날짜 */}
+        <View style={styles.metaContainer}>
+          <Text style={styles.meta}>
+            {postDetail?.userNickname}님 / {formatDate(postDetail?.createdAt)}
+          </Text>
+        </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* 제목 */}
-        <Text style={styles.title}>{postDetail?.title}</Text>
         
-        {/* 작성자 & 날짜 */}
-        <Text style={styles.meta}>
-          {postDetail?.userNickname}님 / {formatDate(postDetail?.createdAt)}
-        </Text>
+
+
 
         {/* 내용 */}
         <Text style={styles.content}>{postDetail?.content}</Text>
@@ -142,10 +147,17 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     color: '#333',
   },
+  metaContainer:{
+    paddingHorizontal:moderateScale(26),
+  },
   meta: {
     fontSize: 14,
     color: '#666',
-    marginBottom: 16,
+    // marginBottom: 16,
+    textAlign:"center",
+    paddingBottom: 20,
+    borderBottomWidth:1,
+    borderColor:"#aaaaaaff",
   },
   content: {
     fontSize: 15,

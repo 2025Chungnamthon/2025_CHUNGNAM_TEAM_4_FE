@@ -19,6 +19,7 @@
     "@reduxjs/toolkit": "^2.8.2",
     "axios": "^1.10.0",
     "expo": "~53.0.17",
+    "expo-file-system": "~18.1.11",
     "expo-image-picker": "~16.1.4",
     "expo-secure-store": "^14.2.3",
     "expo-status-bar": "~2.2.3",
@@ -30,13 +31,14 @@
     "react-native-mime-types": "^2.5.0",
     "react-native-modal": "^14.0.0-rc.1",
     "react-native-picker-select": "^9.3.1",
+    "react-native-root-siblings": "^5.0.1",
+    "react-native-root-toast": "^4.0.1",
     "react-native-safe-area-context": "5.4.0",
     "react-native-screens": "~4.11.1",
     "react-native-size-matters": "^0.4.2",
     "react-native-web": "^0.20.0",
     "react-redux": "^9.2.0",
-    "redux": "^5.0.1",
-    "expo-file-system": "~18.1.11"
+    "redux": "^5.0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

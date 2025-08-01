@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import api from '../../utils/api';
 import { logoutUser } from './userSlice';
+import showToast from '../../components/ToastMessage';
 
 // 1. 미션 목록 조회
 export const fetchUserMissions = createAsyncThunk(
@@ -13,6 +14,7 @@ export const fetchUserMissions = createAsyncThunk(
       return response.data;
     } catch (error) {
       console.log(error)
+      showToast("❌ "+error?.response.data.message || "정보 불러오기 실패");        
       return rejectWithValue(error.response.data.message);
     }
   }
@@ -26,6 +28,7 @@ export const fetchMissionDetail = createAsyncThunk(
       const response = await api.get(`/api/missions/${missionId}`);
       return response.data;
     } catch (error) {
+      showToast("❌ "+error?.response.data.message || "정보 불러오기 실패");        
       return rejectWithValue(error.response.data.message);
     }
   }
@@ -45,6 +48,7 @@ export const selectMissions = createAsyncThunk(
       return response.data;
     } catch (error) {
       console.log(error.response.data.message)
+      showToast("❌ "+error?.response.data.message || "미션 제출 실패");        
       return rejectWithValue(error.response.data.message);
     }
   }
@@ -84,10 +88,11 @@ export const submitMission = createAsyncThunk(
       });
 
       console.log("response",response.data)
-
+      showToast("✅ "+"미션을 제출했습니다!");
       return response.data;
     } catch (error) {
       console.log("error: ", error.response.data);
+      showToast("❌ "+error?.response.data.message || "미션 제출 실패");        
       return rejectWithValue(error.response?.data?.message || '제출 실패');
     }
   }
