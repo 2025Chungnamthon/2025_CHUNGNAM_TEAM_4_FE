@@ -1,14 +1,14 @@
 {
   "expo": {
-    "name": "fe",
-    "slug": "fe",
+    "name": "ana-fe",
+    "slug": "ana-fe",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./src/assets/icon.png",
+    "icon": "./src/assets/etc/icon.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
-      "image": "./src/assets/splash-icon.png",
+      "image": "./src/assets/etc/splash-icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -17,20 +17,20 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./src/assets/adaptive-icon.png",
+        "foregroundImage": "./src/assets/etc/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
       "package": "com.bmbx08.ana"
     },
     "web": {
-      "favicon": "./src/assets/favicon.png"
+      "favicon": "./src/assets/etc/favicon.png"
     },
+    "owner": "bmbx08",
     "extra": {
       "eas": {
-        "projectId": "7c5e27c6-7646-4599-a946-12dfdbafc76a"
+        "projectId": "b4351798-a8bc-41b2-8ee0-7914df4f6ab6"
       }
-    },
-    "owner": "bmbx08"
+    }
   }
 }
